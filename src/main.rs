@@ -1,7 +1,9 @@
+mod lib;
 mod one;
 mod two;
+mod three;
 
 fn main() {
-    two::two_one();
-    two::two_two();
+    three::three_one();
+    three::three_two();
 }
