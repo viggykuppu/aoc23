@@ -1,29 +1,29 @@
-use std::{ops::{Range, RangeInclusive}, collections::HashMap};
+use std::{ops::Range, collections::HashMap};
 
 use regex::Regex;
 use crate::lib;
 
-pub fn three_one() {
+pub fn one() {
     let input = lib::read_input("src/three/input.txt");
     let char_matrix: Vec<_> = input.lines().map(|l| l.chars().collect::<Vec<_>>()).collect();
-    let mut sum = 0;
-    for (i, line) in input.lines().enumerate() {
+    let sum = input.lines().enumerate().fold(0, |acc, (i,line)| {
         let number_regex = Regex::new(r"(\d+)").unwrap();
-        for n in number_regex.find_iter(line) {
+        acc +number_regex.find_iter(line).fold(0, |part_total, n| {
             let number_range = n.start()..n.end();
             if is_symbol_adjacent(i, number_range, &char_matrix) {
                 let engine_part_number = n.as_str().parse::<u32>().unwrap();
-                sum += engine_part_number;
+                part_total + engine_part_number
+            } else {
+                part_total
             }
-        }
-    }
+        })
+    });
     println!("engine part number sum is: {sum}");
 }
 
-pub fn three_two() {
+pub fn two() {
     let input = lib::read_input("src/three/input.txt");
     let char_matrix: Vec<_> = input.lines().map(|l| l.chars().collect::<Vec<_>>()).collect();
-    let mut sum: u64 = 0;
     let mut symbol_adjacency_map: HashMap<(usize, usize), Vec<u32>> = HashMap::new();
     for (i, line) in input.lines().enumerate() {
         let number_regex = Regex::new(r"(\d+)").unwrap();
@@ -33,12 +33,14 @@ pub fn three_two() {
             calculate_symbol_adjacencies(i, number_range, &char_matrix, engine_part_number, &mut symbol_adjacency_map);
         }
     }
-    for key in symbol_adjacency_map.keys() {
+    let sum: u64 = symbol_adjacency_map.keys().fold(0, |acc, key| {
         let adjacents: &Vec<u32> = symbol_adjacency_map.get(key).unwrap();
         if adjacents.len() == 2 {
-            sum += (adjacents[0]*adjacents[1]) as u64;
+            acc + (adjacents[0]*adjacents[1]) as u64
+        } else {
+            acc
         }
-    }
+    });
     println!("engine part number ratio sum is: {sum}");
 }
 

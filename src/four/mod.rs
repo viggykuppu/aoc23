@@ -1,14 +1,12 @@
-use core::num;
-use std::{ops::{Range, RangeInclusive}, collections::{HashMap, HashSet}};
+use std::collections::HashSet;
 
 use regex::Regex;
 use crate::lib;
 
-pub fn four_one() {
+pub fn one() {
     let input = lib::read_input("src/four/input.txt");
-    let mut total_score: u64 = 0;
     let number_regex = Regex::new(r"\d+").unwrap();
-    for card in input.lines() {
+    let total_score:u64 = input.lines().fold(0, |acc, card| {
         let mut num_wins: u32 = 0;
         let mut winning_numbers_set: HashSet<u32> = HashSet::new();
         let card_data: Vec<_> = card.split(":").collect::<Vec<_>>()[1].split("|").collect();
@@ -22,21 +20,19 @@ pub fn four_one() {
         });
         // println!("number of wins: {num_wins}");
         if num_wins != 0 {
-            total_score += 2_u32.pow(num_wins-1) as u64;
+            acc + 2_u32.pow(num_wins-1) as u64
+        } else {
+            acc
         }
-    }
+    });
     println!("My total card score is: {total_score}");
 }
 
-pub fn four_two() {
+pub fn two() {
     let input = lib::read_input("src/four/input.txt");
-    let mut total_copies: u32 = 0;
     let number_regex = Regex::new(r"\d+").unwrap();
     let mut copy_data: Vec<u32> = Vec::new();
-    for _ in input.lines() {
-        copy_data.push(1);
-    }
-    for (i, card) in input.lines().enumerate() {
+    let total_copies = input.lines().enumerate().fold(0, |acc, (i, card)| {
         let mut num_wins: usize = 0;
         let mut winning_numbers_set: HashSet<u32> = HashSet::new();
         let card_data: Vec<_> = card.split(":").collect::<Vec<_>>()[1].split("|").collect();
@@ -48,14 +44,17 @@ pub fn four_two() {
                 num_wins += 1;
             }
         });
+        if(copy_data.len() <= i) {
+            copy_data.push(1);
+        }
         let num_copies = *copy_data.get(i).unwrap();
         for j in (i+1)..(i+1+num_wins) {
             match copy_data.get_mut(j) {
-                None => copy_data.push(num_copies),
+                None => copy_data.push(1+num_copies),
                 Some(c) => *c += num_copies, 
             }
         }
-        total_copies += num_copies;
-    }
+        acc + num_copies
+    });
     println!("My total number of cards is: {total_copies}");
 }
