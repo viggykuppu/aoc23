@@ -44,7 +44,7 @@ pub fn two() {
                 num_wins += 1;
             }
         });
-        if(copy_data.len() <= i) {
+        if copy_data.len() <= i {
             copy_data.push(1);
         }
         let num_copies = *copy_data.get(i).unwrap();
