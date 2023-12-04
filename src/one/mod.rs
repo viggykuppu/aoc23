@@ -1,11 +1,14 @@
 use std::collections::HashMap;
 use regex::Regex;
 
+use crate::lib;
+
 pub fn one_one() {
+    let input = lib::read_input("src/one/input.txt");
     let number_regex = Regex::new(r"\d").unwrap();
     let map = init_map();
     let mut sum: u32 = 0;
-    for (_i, s) in INPUT.iter().enumerate() {
+    for s in input.lines() {
         let caps: Vec<_> = number_regex.find_iter(s).map(|m: regex::Match<'_>| m.as_str()).collect();
         let val = 10*parse_number(caps[0], &map) + parse_number(caps[caps.len()-1], &map);
         sum += val;
@@ -14,11 +17,12 @@ pub fn one_one() {
 }
 
 pub fn one_two() {
+    let input = lib::read_input("src/one/input.txt");
     let number_regex = Regex::new(r"\d|one|two|three|four|five|six|seven|eight|nine").unwrap();
     let back_regex = Regex::new(r"\d|enin|thgie|neves|xis|evif|ruof|eerht|owt|eno").unwrap();
     let map = init_map();
     let mut sum: u32 = 0;
-    for (_i, s) in INPUT.iter().enumerate() {
+    for s in input.lines() {
         let caps:regex::Match<'_> = number_regex.find(s).unwrap();
         let reversed_s = &s.chars().rev().collect::<String>();
         let caps_back = back_regex.find(&reversed_s).unwrap();
