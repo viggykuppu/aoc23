@@ -14,7 +14,7 @@ pub fn one() {
             .unwrap();
         let mut valid_game = true;
 
-        for game in game.split(";") {
+        for game in game.split(';') {
             let (r, g, b) = get_color_values(game);
             //  println!("g: {g}, b: {b}, r: {r}");
             if g > max_green || b > max_blue || r > max_red {
@@ -37,7 +37,7 @@ pub fn two() {
         let mut min_r = 0;
         let mut min_b = 0;
         //   println!("Game id: {game_id} ---------");
-        for game in game.split(";") {
+        for game in game.split(';') {
             //  println!("g: {g}, b: {b}, r: {r}");
             let (r, g, b) = get_color_values(game);
             if g > min_g {
@@ -64,7 +64,7 @@ fn get_color_values(haystack: &str) -> (u32, u32, u32) {
         get_color_value(c, "g", &mut g);
         get_color_value(c, "b", &mut b);
     });
-    return (r, g, b);
+    (r, g, b)
 }
 
 fn get_color_value(c: &Captures<'_>, name: &str, v: &mut u32) {

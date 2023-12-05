@@ -9,7 +9,7 @@ pub fn one() {
     let total_score: u64 = input.lines().fold(0, |acc, card| {
         let mut num_wins: u32 = 0;
         let mut winning_numbers_set: HashSet<u32> = HashSet::new();
-        let card_data: Vec<_> = card.split(":").collect::<Vec<_>>()[1].split("|").collect();
+        let card_data: Vec<_> = card.split(':').collect::<Vec<_>>()[1].split('|').collect();
         let winning_numbers = card_data[0];
         let my_card = card_data[1];
         number_regex.find_iter(winning_numbers).for_each(|n| {
@@ -37,7 +37,7 @@ pub fn two() {
     let total_copies = input.lines().enumerate().fold(0, |acc, (i, card)| {
         let mut num_wins: usize = 0;
         let mut winning_numbers_set: HashSet<u32> = HashSet::new();
-        let card_data: Vec<_> = card.split(":").collect::<Vec<_>>()[1].split("|").collect();
+        let card_data: Vec<_> = card.split(':').collect::<Vec<_>>()[1].split('|').collect();
         let winning_numbers = card_data[0];
         let my_card = card_data[1];
         number_regex.find_iter(winning_numbers).for_each(|n| {

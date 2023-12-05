@@ -72,7 +72,7 @@ fn is_symbol_adjacent(row_num: usize, range: Range<usize>, char_matrix: &Vec<Vec
             }
         }
     }
-    return false;
+    false
 }
 
 fn calculate_symbol_adjacencies(
@@ -108,10 +108,5 @@ fn calculate_symbol_adjacencies(
 }
 
 fn is_valid_index(row_num: isize, col_num: isize, dims: (isize, isize)) -> bool {
-    // check row
-    if row_num >= 0 && row_num < dims.0 {
-        // check col
-        return col_num >= 0 && col_num < dims.1;
-    }
-    return false;
+    row_num >= 0 && row_num < dims.0 && col_num >= 0 && col_num < dims.1
 }

@@ -31,7 +31,7 @@ pub fn one() {
             .map(|m| m.as_str().parse::<u64>().unwrap())
             .collect();
         let (dest_base, source_base, range) = (
-            *vals.get(0).unwrap(),
+            *vals.first().unwrap(),
             *vals.get(1).unwrap(),
             *vals.get(2).unwrap(),
         );
@@ -47,9 +47,9 @@ pub fn one() {
             maps.iter().try_for_each(|map| {
                 if map.0.contains(seed) {
                     *seed = ((*seed as i64) + map.1) as u64;
-                    return ControlFlow::Break(());
+                    return ControlFlow::Break(())
                 }
-                return ControlFlow::Continue(());
+                ControlFlow::Continue(())
             });
         });
     });
@@ -67,8 +67,8 @@ pub fn two() {
     let mut seeds: Vec<_> = seed_regex
         .find_iter(seeds_line)
         .map(|seed_pair| {
-            let seeds_split: Vec<_> = seed_pair.as_str().split(" ").collect();
-            let seed1 = seeds_split.get(0).unwrap().parse::<u64>().unwrap();
+            let seeds_split: Vec<_> = seed_pair.as_str().split(' ').collect();
+            let seed1 = seeds_split.first().unwrap().parse::<u64>().unwrap();
             let offset = seeds_split.get(1).unwrap().parse::<u64>().unwrap();
             seed1..(seed1 + offset)
         })
@@ -90,7 +90,7 @@ pub fn two() {
             .map(|m| m.as_str().parse::<u64>().unwrap())
             .collect();
         let (dest_base, source_base, range) = (
-            *vals.get(0).unwrap(),
+            *vals.first().unwrap(),
             *vals.get(1).unwrap(),
             *vals.get(2).unwrap(),
         );
@@ -112,9 +112,9 @@ pub fn two() {
                         if s == 0 {
                             println!("Seed {i} became 0!!");
                         }
-                        return ControlFlow::Break(());
+                        return ControlFlow::Break(())
                     }
-                    return ControlFlow::Continue(());
+                    ControlFlow::Continue(())
                 });
             });
             if s < min {
@@ -136,8 +136,8 @@ pub fn two_special() {
     let mut seeds: Vec<_> = seed_regex
         .find_iter(seeds_line)
         .map(|seed_pair| {
-            let seeds_split: Vec<_> = seed_pair.as_str().split(" ").collect();
-            let seed1 = seeds_split.get(0).unwrap().parse::<u64>().unwrap();
+            let seeds_split: Vec<_> = seed_pair.as_str().split(' ').collect();
+            let seed1 = seeds_split.first().unwrap().parse::<u64>().unwrap();
             let offset = seeds_split.get(1).unwrap().parse::<u64>().unwrap();
             seed1..(seed1 + offset)
         })
@@ -159,7 +159,7 @@ pub fn two_special() {
             .map(|m| m.as_str().parse::<u64>().unwrap())
             .collect();
         let (dest_base, source_base, range) = (
-            *vals.get(0).unwrap(),
+            *vals.first().unwrap(),
             *vals.get(1).unwrap(),
             *vals.get(2).unwrap(),
         );
@@ -186,17 +186,16 @@ pub fn two_special() {
                 // let (new_seed_one, new_seed_two) = compare_seed_to_map(seed, map);
                 let seed = seeds.get_mut(i).unwrap();
                 if compare_seed_to_map(seed, map, &mut new_seeds) {
-                    while new_seeds.len() != 0 {
-                        let new_seed = new_seeds.pop().unwrap();
+                    while let Some(new_seed) = new_seeds.pop() {
                         if new_seed.start == 0 {
                             println!("0 new seed");
                             dbg!(&new_seed);
                         }
                         seeds.push(new_seed);
                     }
-                    return ControlFlow::Break(());
+                    return ControlFlow::Break(())
                 }
-                return ControlFlow::Continue(());
+                ControlFlow::Continue(())
             });
         }
         // dbg!(&seeds);
@@ -285,5 +284,5 @@ fn compare_seed_to_map(
         }
         return true;
     }
-    return false;
+    false
 }

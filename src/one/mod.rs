@@ -32,10 +32,10 @@ pub fn two() {
 
 fn parse_number(s: &str, map: &HashMap<&'static str, u32>) -> u32 {
     let number_text_regex = Regex::new(r"one|two|three|four|five|six|seven|eight|nine").unwrap();
-    return match number_text_regex.find(s) {
+    match number_text_regex.find(s) {
         None => s.parse::<u32>().unwrap(),
         Some(_m) => map.get(s).unwrap().to_owned(),
-    };
+    }
 }
 
 fn init_map() -> HashMap<&'static str, u32> {
@@ -49,5 +49,5 @@ fn init_map() -> HashMap<&'static str, u32> {
     map.insert("seven", 7);
     map.insert("eight", 8);
     map.insert("nine", 9);
-    return map;
+    map
 }
