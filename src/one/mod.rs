@@ -1,5 +1,5 @@
-use std::collections::HashMap;
 use onig::*;
+use std::collections::HashMap;
 
 use crate::lib;
 
@@ -8,19 +8,24 @@ pub fn one() {
     let number_regex = Regex::new(r"\d").unwrap();
     let map = init_map();
     let sum = input.lines().fold(0, |acc, line| {
-        let caps: Vec<_> = number_regex.find_iter(line).map(|x| &line[x.0..x.1]).collect();
-        acc + 10*parse_number(caps[0], &map) + parse_number(caps[caps.len()-1], &map)
+        let caps: Vec<_> = number_regex
+            .find_iter(line)
+            .map(|x| &line[x.0..x.1])
+            .collect();
+        acc + 10 * parse_number(caps[0], &map) + parse_number(caps[caps.len() - 1], &map)
     });
     println!("SUM IS {sum}");
 }
 
 pub fn two() {
     let input = lib::read_input("src/one/input.txt");
-    let number_regex = Regex::new(r"(?=(\d|one|two|three|four|five|six|seven|eight|nine))").unwrap();
+    let number_regex =
+        Regex::new(r"(?=(\d|one|two|three|four|five|six|seven|eight|nine))").unwrap();
     let map = init_map();
     let sum = input.lines().fold(0, |acc: u32, line| {
-        let caps:Vec<_> = number_regex.captures_iter(line).collect();
-        acc + 10*parse_number(caps.first().unwrap().at(1).unwrap(), &map) + parse_number(caps.last().unwrap().at(1).unwrap(), &map)
+        let caps: Vec<_> = number_regex.captures_iter(line).collect();
+        acc + 10 * parse_number(caps.first().unwrap().at(1).unwrap(), &map)
+            + parse_number(caps.last().unwrap().at(1).unwrap(), &map)
     });
     println!("SUM IS {sum}");
 }
@@ -29,8 +34,8 @@ fn parse_number(s: &str, map: &HashMap<&'static str, u32>) -> u32 {
     let number_text_regex = Regex::new(r"one|two|three|four|five|six|seven|eight|nine").unwrap();
     return match number_text_regex.find(s) {
         None => s.parse::<u32>().unwrap(),
-        Some(_m) => map.get(s).unwrap().to_owned()
-    } 
+        Some(_m) => map.get(s).unwrap().to_owned(),
+    };
 }
 
 fn init_map() -> HashMap<&'static str, u32> {
@@ -44,5 +49,5 @@ fn init_map() -> HashMap<&'static str, u32> {
     map.insert("seven", 7);
     map.insert("eight", 8);
     map.insert("nine", 9);
-    return map
+    return map;
 }
