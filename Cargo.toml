@@ -8,3 +8,6 @@ edition = "2021"
 [dependencies]
 onig = "6.4.0"
 regex = "1.10.2"
+
+[profile.dev]
+opt-level = 3
