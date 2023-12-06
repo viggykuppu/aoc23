@@ -28,7 +28,7 @@ pub fn one() {
             acc
         }
     });
-    println!("Valid gameid sum is: {sum}");
+    submit!(1, sum);
 }
 
 #[aocd(2023,2)]
@@ -54,7 +54,7 @@ pub fn two() {
         }
         acc + min_g * min_r * min_b
     });
-    println!("Game power sum is: {sum}");
+    submit!(2, sum);
 }
 
 fn get_color_values(haystack: &str) -> (u32, u32, u32) {

@@ -49,3 +49,42 @@ pub fn two() {
     });
     submit!(2, record_beats);
 }
+
+#[aocd(2023,6)]
+pub fn one_quad() {
+    let input= input!();
+    let lines:Vec<_> = input.lines().collect();
+    let number_regex = Regex::new(r"\d+").unwrap();
+    let times:Vec<_> = number_regex.find_iter(lines.first().unwrap()).map(|time| time.as_str().parse::<f64>().unwrap()).collect();
+    let records:Vec<_> = number_regex.find_iter(lines.last().unwrap()).map(|time| time.as_str().parse::<f64>().unwrap()).collect();
+    
+    let record_beats = times.iter().zip(records.iter()).fold(1, |acc, (time, record)| {
+        let determinant = (time.powi(2) - 4_f64*record).sqrt();
+        let x1 = (-1_f64*time + determinant)/(-2_f64);
+        let x2 = (-1_f64*time - determinant)/(-2_f64);
+        let num_ways_to_beat_record = x2.ceil() - x1.ceil();
+        acc * num_ways_to_beat_record as u64
+    });
+    submit!(1, record_beats);
+}
+
+#[aocd(2023,6)]
+pub fn two_quad() {
+    let input= input!();
+    let lines:Vec<_> = input.lines().collect();
+    let number_regex = Regex::new(r"\d+").unwrap();
+
+    let time = number_regex.find_iter(lines.first().unwrap()).fold(String::new(), |acc, time_chunk| {
+        acc + time_chunk.as_str()
+    }).parse::<f64>().unwrap();
+
+    let record = number_regex.find_iter(lines.last().unwrap()).fold(String::new(), |acc, record_chunk| {
+        acc + record_chunk.as_str()
+    }).parse::<f64>().unwrap();
+    
+    let determinant = (time.powi(2) - 4_f64*record).sqrt();
+    let x1 = (-1_f64*time + determinant)/(-2_f64);
+    let x2 = (-1_f64*time - determinant)/(-2_f64);
+    let num_ways_to_beat_record = x2.ceil() - x1.ceil();
+    submit!(2, num_ways_to_beat_record);
+}

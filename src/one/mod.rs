@@ -15,7 +15,7 @@ pub fn one() {
             .collect();
         acc + 10 * parse_number(caps[0], &map) + parse_number(caps[caps.len() - 1], &map)
     });
-    println!("SUM IS {sum}");
+    submit!(1, sum);
 }
 
 #[aocd(2023,1)]
@@ -29,7 +29,7 @@ pub fn two() {
         acc + 10 * parse_number(caps.first().unwrap().at(1).unwrap(), &map)
             + parse_number(caps.last().unwrap().at(1).unwrap(), &map)
     });
-    println!("SUM IS {sum}");
+    submit!(2, sum);
 }
 
 fn parse_number(s: &str, map: &HashMap<&'static str, u32>) -> u32 {

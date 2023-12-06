@@ -22,7 +22,7 @@ pub fn one() {
             }
         })
     });
-    println!("engine part number sum is: {sum}");
+    submit!(1, sum);
 }
 
 #[aocd(2023,3)]
@@ -55,7 +55,7 @@ pub fn two() {
             acc
         }
     });
-    println!("engine part number ratio sum is: {sum}");
+    submit!(2, sum);
 }
 
 fn is_symbol_adjacent(row_num: usize, range: Range<usize>, char_matrix: &Vec<Vec<char>>) -> bool {

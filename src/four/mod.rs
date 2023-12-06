@@ -28,7 +28,7 @@ pub fn one() {
             acc
         }
     });
-    println!("My total card score is: {total_score}");
+    submit!(1, total_score);
 }
 
 #[aocd(2023,6)]
@@ -62,5 +62,5 @@ pub fn two() {
         }
         acc + num_copies
     });
-    println!("My total number of cards is: {total_copies}");
+    submit!(2, total_copies);
 }

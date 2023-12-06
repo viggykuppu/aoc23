@@ -54,7 +54,7 @@ pub fn one() {
             });
         });
     });
-    println!("minimum location is: {}", seeds.iter().min().unwrap());
+    submit!(1, seeds.iter().min().unwrap());
 }
 
 #[aocd(2023,5)]
@@ -120,11 +120,7 @@ pub fn two() {
             i += 1;
         }
     });
-
-    println!(
-        "minimum location is: {}",
-        seeds.iter().map(|s| s.start).min().unwrap()
-    );
+    submit!(2, seeds.iter().map(|s| s.start).min().unwrap());
 }
 
 fn compare_seed_to_map(
@@ -251,5 +247,5 @@ pub fn two_brute_force() {
             }
         }
     });
-    println!("minimum location is: {}", min);
+    submit!(2, min);
 }
