@@ -1,9 +1,9 @@
 use regex::Regex;
+use aocd::*;
 
-
-
+#[aocd(2023,6)]
 pub fn one() {
-    let input= crate::lib::read_input("src/six/input.txt");
+    let input= input!();
     let lines:Vec<_> = input.lines().collect();
     let number_regex = Regex::new(r"\d+").unwrap();
     let times:Vec<_> = number_regex.find_iter(lines.first().unwrap()).map(|time| time.as_str().parse::<u32>().unwrap()).collect();
@@ -21,11 +21,12 @@ pub fn one() {
         });
         acc*num_records
     });
-    println!("Number of ways I can beat the records: {record_beats}");
+    submit!(1, record_beats);
 }
 
+#[aocd(2023,6)]
 pub fn two() {
-    let input= crate::lib::read_input("src/six/input.txt");
+    let input= input!();
     let lines:Vec<_> = input.lines().collect();
     let number_regex = Regex::new(r"\d+").unwrap();
 
@@ -46,5 +47,5 @@ pub fn two() {
             acc
         }
     });
-    println!("Number of ways I can beat the records: {record_beats}");
+    submit!(2, record_beats);
 }

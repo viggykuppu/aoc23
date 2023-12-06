@@ -1,10 +1,11 @@
-use core::num;
+use aocd::*;
 use std::ops::{ControlFlow, Range};
 
 use regex::Regex;
 
+#[aocd(2023,5)]
 pub fn one() {
-    let input = crate::lib::read_input("src/five/input.txt");
+    let input = input!();
 
     let mut lines_iter = input.lines();
     let seeds_line = lines_iter.next().unwrap();
@@ -56,8 +57,9 @@ pub fn one() {
     println!("minimum location is: {}", seeds.iter().min().unwrap());
 }
 
+#[aocd(2023,5)]
 pub fn two() {
-    let input = crate::lib::read_input("src/five/input.txt");
+    let input = input!();
 
     let mut lines_iter = input.lines();
     let seeds_line = lines_iter.next().unwrap();
@@ -185,8 +187,9 @@ fn compare_seed_to_map(
     false
 }
 
+#[aocd(2023,5)]
 pub fn two_brute_force() {
-    let input = crate::lib::read_input("src/five/input.txt");
+    let input = input!();
 
     let mut lines_iter = input.lines();
     let seeds_line = lines_iter.next().unwrap();

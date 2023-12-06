@@ -1,10 +1,11 @@
 use std::collections::HashSet;
 
-use crate::lib;
+use aocd::*;
 use regex::Regex;
 
+#[aocd(2023,4)]
 pub fn one() {
-    let input = lib::read_input("src/four/input.txt");
+    let input = input!();
     let number_regex = Regex::new(r"\d+").unwrap();
     let total_score: u64 = input.lines().fold(0, |acc, card| {
         let mut num_wins: u32 = 0;
@@ -30,8 +31,9 @@ pub fn one() {
     println!("My total card score is: {total_score}");
 }
 
+#[aocd(2023,6)]
 pub fn two() {
-    let input = lib::read_input("src/four/input.txt");
+    let input = input!();
     let number_regex = Regex::new(r"\d+").unwrap();
     let mut copy_data: Vec<u32> = Vec::new();
     let total_copies = input.lines().enumerate().fold(0, |acc, (i, card)| {

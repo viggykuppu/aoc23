@@ -1,10 +1,11 @@
 use std::{collections::HashMap, ops::Range};
 
-use crate::lib;
+use aocd::*;
 use regex::Regex;
 
+#[aocd(2023,3)]
 pub fn one() {
-    let input = lib::read_input("src/three/input.txt");
+    let input = input!();
     let char_matrix: Vec<_> = input
         .lines()
         .map(|l| l.chars().collect::<Vec<_>>())
@@ -24,8 +25,9 @@ pub fn one() {
     println!("engine part number sum is: {sum}");
 }
 
+#[aocd(2023,3)]
 pub fn two() {
-    let input = lib::read_input("src/three/input.txt");
+    let input = input!();
     let char_matrix: Vec<_> = input
         .lines()
         .map(|l| l.chars().collect::<Vec<_>>())

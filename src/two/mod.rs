@@ -1,9 +1,10 @@
 use regex::{Captures, Regex};
 
-use crate::lib;
+use aocd::*;
 
+#[aocd(2023,2)]
 pub fn one() {
-    let game_data = lib::read_input("src/two/input.txt");
+    let game_data = input!();
     let max_green = 13;
     let max_red = 12;
     let max_blue = 14;
@@ -30,8 +31,9 @@ pub fn one() {
     println!("Valid gameid sum is: {sum}");
 }
 
+#[aocd(2023,2)]
 pub fn two() {
-    let game_data = lib::read_input("src/two/input.txt");
+    let game_data = input!();
     let sum = game_data.lines().fold(0, |acc, game| {
         let mut min_g = 0;
         let mut min_r = 0;

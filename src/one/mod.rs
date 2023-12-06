@@ -1,10 +1,11 @@
 use onig::*;
 use std::collections::HashMap;
 
-use crate::lib;
+use aocd::*;
 
+#[aocd(2023,1)]
 pub fn one() {
-    let input = lib::read_input("src/one/input.txt");
+    let input = input!();
     let number_regex = Regex::new(r"\d").unwrap();
     let map = init_map();
     let sum = input.lines().fold(0, |acc, line| {
@@ -17,8 +18,9 @@ pub fn one() {
     println!("SUM IS {sum}");
 }
 
+#[aocd(2023,1)]
 pub fn two() {
-    let input = lib::read_input("src/one/input.txt");
+    let input = input!();
     let number_regex =
         Regex::new(r"(?=(\d|one|two|three|four|five|six|seven|eight|nine))").unwrap();
     let map = init_map();
