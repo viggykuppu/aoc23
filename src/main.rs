@@ -6,6 +6,6 @@ mod three;
 mod two;
 
 fn main() {
+    // five::one();
     five::two();
-    // five::two_special();
 }
