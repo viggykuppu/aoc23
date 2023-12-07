@@ -1,6 +1,15 @@
 use std::collections::HashMap;
 
-use super::HandKind;
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
+pub enum HandKind {
+    Five = 7,
+    Four = 6,
+    Full = 5,
+    Three = 4,
+    TwoPair = 3,
+    OnePair = 2,
+    High = 1
+}
 
 #[derive(Debug, Eq, PartialEq)]
 pub struct Hand {

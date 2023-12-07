@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use aocd::*;
 use regex::Regex;
 
@@ -30,8 +28,6 @@ pub fn one() {
     }).collect();
     hands.sort();
     let total_points = hands.iter().enumerate().fold(0, |acc, (i, hand)| {
-        // println!("hand: {:?}, hand_kind: {:?}, high cards: {:?}", hand.hand, hand.hand_kind, hand.high_cards);
-        // println!("Adding points: {}",(i as u32 + 1)*hand.bid);
         acc + (i as u32 + 1)*hand.bid
     });
     submit!(1, total_points);
@@ -62,22 +58,7 @@ pub fn two() {
     }).collect();
     hands.sort();
     let total_points = hands.iter().enumerate().fold(0, |acc, (i, hand)| {
-        println!("hand: {:?}, hand_kind: {:?}", hand.hand, hand.hand_kind);
-        // println!("Adding points: {}",(i as u32 + 1)*hand.bid);
         acc + (i as u32 + 1)*hand.bid
     });
-    println!("total_points: {total_points}");
-    // submit!(2, total_points);
-}
-
-
-#[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
-enum HandKind {
-    Five = 7,
-    Four = 6,
-    Full = 5,
-    Three = 4,
-    TwoPair = 3,
-    OnePair = 2,
-    High = 1
+    submit!(2, total_points);
 }
