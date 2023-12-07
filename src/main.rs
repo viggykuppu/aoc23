@@ -2,10 +2,10 @@ mod five;
 mod four;
 mod lib;
 mod one;
+mod seven;
+mod six;
 mod three;
 mod two;
-mod six;
-mod seven;
 
 fn main() {
     seven::one();

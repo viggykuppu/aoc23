@@ -8,7 +8,7 @@ pub enum HandKind {
     Three = 4,
     TwoPair = 3,
     OnePair = 2,
-    High = 1
+    High = 1,
 }
 
 #[derive(Debug, Eq, PartialEq)]
@@ -32,11 +32,11 @@ impl Hand {
         let mut char_map: HashMap<char, usize> = HashMap::new();
         let mut hand_kind = HandKind::High;
         hand.iter().for_each(|card| {
-        if let Some(val) = char_map.get_mut(card) {
-            *val += 1_usize;
-        } else {
-            char_map.insert(*card, 1);
-        }
+            if let Some(val) = char_map.get_mut(card) {
+                *val += 1_usize;
+            } else {
+                char_map.insert(*card, 1);
+            }
         });
         for key in char_map.keys() {
             let num_occurrences = *char_map.get(key).unwrap();
@@ -78,7 +78,7 @@ impl PartialOrd for Hand {
             Some(std::cmp::Ordering::Equal)
         } else {
             self.hand_kind.partial_cmp(&other.hand_kind)
-        }
+        };
     }
 }
 
@@ -92,16 +92,16 @@ impl Ord for Hand {
 pub struct Hand2 {
     pub hand: Vec<char>,
     pub bid: u32,
-    pub hand_kind: HandKind
+    pub hand_kind: HandKind,
 }
 
-impl Hand2{
-    pub fn new(hand: Vec<char>, bid: u32) -> Hand2{
+impl Hand2 {
+    pub fn new(hand: Vec<char>, bid: u32) -> Hand2 {
         let hand_kind = Self::get_hand_kind(&hand);
         Hand2 {
             hand: hand,
             bid: bid,
-            hand_kind: hand_kind
+            hand_kind: hand_kind,
         }
     }
 
@@ -169,7 +169,7 @@ impl Hand2{
             } else if num_jokers == 3 {
                 hand_kind = HandKind::Four;
             } else if num_jokers == 2 {
-                hand_kind = HandKind::Three ;
+                hand_kind = HandKind::Three;
             } else if num_jokers == 1 {
                 hand_kind = HandKind::OnePair;
             }
@@ -189,11 +189,11 @@ impl PartialOrd for Hand2 {
             Some(std::cmp::Ordering::Equal)
         } else {
             self.hand_kind.partial_cmp(&other.hand_kind)
-        }
+        };
     }
 }
 
-impl Ord for Hand2{
+impl Ord for Hand2 {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         self.partial_cmp(other).unwrap()
     }

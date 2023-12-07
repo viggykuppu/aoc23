@@ -2,7 +2,7 @@ use regex::{Captures, Regex};
 
 use aocd::*;
 
-#[aocd(2023,2)]
+#[aocd(2023, 2)]
 pub fn one() {
     let game_data = input!();
     let max_green = 13;
@@ -31,7 +31,7 @@ pub fn one() {
     submit!(1, sum);
 }
 
-#[aocd(2023,2)]
+#[aocd(2023, 2)]
 pub fn two() {
     let game_data = input!();
     let sum = game_data.lines().fold(0, |acc, game| {

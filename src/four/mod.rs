@@ -3,7 +3,7 @@ use std::collections::HashSet;
 use aocd::*;
 use regex::Regex;
 
-#[aocd(2023,4)]
+#[aocd(2023, 4)]
 pub fn one() {
     let input = input!();
     let number_regex = Regex::new(r"\d+").unwrap();
@@ -31,7 +31,7 @@ pub fn one() {
     submit!(1, total_score);
 }
 
-#[aocd(2023,6)]
+#[aocd(2023, 6)]
 pub fn two() {
     let input = input!();
     let number_regex = Regex::new(r"\d+").unwrap();

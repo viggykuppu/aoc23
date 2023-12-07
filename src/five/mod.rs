@@ -3,7 +3,7 @@ use std::ops::{ControlFlow, Range};
 
 use regex::Regex;
 
-#[aocd(2023,5)]
+#[aocd(2023, 5)]
 pub fn one() {
     let input = input!();
 
@@ -48,7 +48,7 @@ pub fn one() {
             maps.iter().try_for_each(|map| {
                 if map.0.contains(seed) {
                     *seed = ((*seed as i64) + map.1) as u64;
-                    return ControlFlow::Break(())
+                    return ControlFlow::Break(());
                 }
                 ControlFlow::Continue(())
             });
@@ -57,7 +57,7 @@ pub fn one() {
     submit!(1, seeds.iter().min().unwrap());
 }
 
-#[aocd(2023,5)]
+#[aocd(2023, 5)]
 pub fn two() {
     let input = input!();
 
@@ -113,7 +113,7 @@ pub fn two() {
                     while let Some(new_seed) = new_seeds.pop() {
                         seeds.push(new_seed);
                     }
-                    return ControlFlow::Break(())
+                    return ControlFlow::Break(());
                 }
                 ControlFlow::Continue(())
             });
@@ -151,7 +151,7 @@ fn compare_seed_to_map(
             seed.end = seed_end;
             return true;
         }
-    } else if map.0.contains(&(seed.end-1)) {
+    } else if map.0.contains(&(seed.end - 1)) {
         // Case 3: Seed upper bound in map range, but not lower bound
         // s1 m1 s2 m2
         // s1..m1
@@ -169,7 +169,9 @@ fn compare_seed_to_map(
         seed.start = seed_start;
         seed.end = seed_end;
         return true;
-    } else if seed.contains(&map.0.start) && (seed.contains(&(map.0.end-1)) || seed.end == map.0.end) {
+    } else if seed.contains(&map.0.start)
+        && (seed.contains(&(map.0.end - 1)) || seed.end == map.0.end)
+    {
         // Case 4: Map range entirely in seed
         // s1 m1 m2 s2
         let new_seed_one = seed.start..map.0.start;
@@ -183,7 +185,7 @@ fn compare_seed_to_map(
     false
 }
 
-#[aocd(2023,5)]
+#[aocd(2023, 5)]
 pub fn two_brute_force() {
     let input = input!();
 
@@ -237,7 +239,7 @@ pub fn two_brute_force() {
                 maps.iter().try_for_each(|map| {
                     if map.0.contains(&s) {
                         s = ((s as i64) + map.1) as u64;
-                        return ControlFlow::Break(())
+                        return ControlFlow::Break(());
                     }
                     ControlFlow::Continue(())
                 });
