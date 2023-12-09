@@ -72,6 +72,7 @@ pub fn two() {
         i
     });
     let lcm: u64 = cycle_counts.fold(1, |acc, cycle_count| {
+        println!("cycles: {cycle_count}");
         num::Integer::lcm(&acc, &cycle_count)
     });
     println!("part 2 num steps: {lcm}");
