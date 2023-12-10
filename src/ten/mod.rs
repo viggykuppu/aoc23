@@ -201,36 +201,6 @@ fn get_val_at_direction<'a>(grid: &'a Vec<Vec<char>>, current_position: (usize, 
     (grid.get(new_y).unwrap().get(new_x).unwrap(), (new_x, new_y))
 }
 
-fn propagate_outs(grid: &mut Vec<Vec<char>>, current_position: (usize, usize)) {
-    grid[current_position.0][current_position.1] = 'O';
-    let dims = (grid.len(), grid[0].len());
-    // above
-    let test_index = ((current_position.0 as isize - 1_isize), current_position.1 as isize);
-    if is_valid_index(test_index, dims) && grid[test_index.0 as usize][test_index.1 as usize] == '.' {
-       propagate_outs(grid, (test_index.0 as usize, test_index.1  as usize)); 
-    }
-    // right
-    let test_index = (current_position.0 as isize, current_position.1 as isize + 1_isize);
-    if is_valid_index(test_index, dims) && grid[test_index.0 as usize][test_index.1 as usize] == '.' {
-       propagate_outs(grid, (test_index.0 as usize, test_index.1  as usize)); 
-    }
-    // left
-    let test_index = ((current_position.0 as isize), current_position.1 as isize - 1_isize);
-    if is_valid_index(test_index, dims) && grid[test_index.0 as usize][test_index.1 as usize] == '.' {
-       propagate_outs(grid, (test_index.0 as usize, test_index.1  as usize)); 
-    }
-    // down
-    let test_index = ((current_position.0 as isize + 1_isize), current_position.1 as isize);
-    if is_valid_index(test_index, dims) && grid[test_index.0 as usize][test_index.1 as usize] == '.' {
-       propagate_outs(grid, (test_index.0 as usize, test_index.1  as usize)); 
-    }
-}
-
-fn is_valid_index(test_index: (isize, isize), dims: (usize, usize)) -> bool {
-    return test_index.0 >= 0 && test_index.0 < dims.0 as isize &&
-        test_index.1 >= 0 && test_index.1 < dims.1 as isize;
-}
-
 #[derive(Hash, PartialEq, Eq)]
 pub enum Direction {
     North,
