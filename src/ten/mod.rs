@@ -8,7 +8,6 @@ pub fn one() {
     let binding = input!();
     let grid: Vec<Vec<_>> = binding.lines().map(|line| line.chars().collect()).collect();
     let start_position = Regex::new(r"S").unwrap().find(&binding).unwrap().start();
-    dbg!(&start_position);
     // need to offset by 1 since start_position also accounts for newlines
     let start_row = (start_position as f32 / (grid[0].len()+1) as f32) as usize;
     let start_column = start_position % (grid[0].len()+1);

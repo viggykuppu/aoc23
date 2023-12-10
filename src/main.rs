@@ -11,6 +11,6 @@ mod nine;
 mod ten;
 
 fn main() {
-    // ten::one();
+    ten::one();
     ten::two();
 }
