@@ -54,6 +54,7 @@ fn num_valid_configs(s: &str, b: &Vec<usize>, s_idx: isize, b_idx: isize, map: &
         return *v;
     }
 
+    // base cases
     let mut total_valid_configs = 0_usize;
     if b_idx < 0 {
         if s_idx < 0 {
@@ -73,71 +74,53 @@ fn num_valid_configs(s: &str, b: &Vec<usize>, s_idx: isize, b_idx: isize, map: &
         map.insert((s_idx, b_idx), 0_usize);
         return 0_usize;
     }
+
+    // recursive cases
+    // third case, ? case, is just summing the cases where the # and a .
     if &s[u_s_idx..(u_s_idx+1)] == "." {
         total_valid_configs = num_valid_configs(s, b, s_idx.saturating_sub(1), b_idx, map);
     } else if &s[u_s_idx..(u_s_idx+1)] == "#" {
-        // pop last broken group val
-        let pop = b[b_idx as usize];
-        let mut valid_run = true;
-        let mut run_length = pop + 1;
-        for i in 0..pop {
-            if (s_idx as isize - i as isize) < 0 {
-                valid_run = false;
-                break;
-            }
-            let test_char = &s[(u_s_idx.saturating_sub(i))..=(u_s_idx.saturating_sub(i))];
-            if test_char == "." {
-                valid_run = false;
-                break;
-            }
-        }
-        if (s_idx as isize - pop as isize) < 0 {
-            run_length = pop;
-        } else if &s[(u_s_idx.saturating_sub(pop))..=(u_s_idx.saturating_sub(pop))] != "#" {
-            run_length = pop + 1;
-        } else {
-            valid_run = false;
-        }
-        if valid_run {
-            total_valid_configs =  num_valid_configs(s, b, s_idx.saturating_sub(run_length as isize), b_idx.saturating_sub(1), map);
-        } else {
-            total_valid_configs =  0_usize;
-        }
+        total_valid_configs = process_broken_spring(s,b,s_idx,b_idx, map);
     } else {
-        let pop = b[b_idx as usize];
-        let mut valid_run = true;
-        let mut run_length = pop + 1;
-        for i in 0..pop {
-            if (s_idx as isize - i as isize) < 0 {
-                valid_run = false;
-                break;
-            }
-            let test_char = &s[(u_s_idx.saturating_sub(i))..=(u_s_idx.saturating_sub(i))];
-            if test_char == "." {
-                valid_run = false;
-                break;
-            }
-        }
-        if (s_idx as isize - pop as isize) < 0 {
-            run_length = pop;
-        } else if &s[(u_s_idx.saturating_sub(pop))..=(u_s_idx.saturating_sub(pop))] != "#" {
-            run_length = pop + 1;
-        } else {
-            valid_run = false;
-        }
-        let val2 = if valid_run {
-            num_valid_configs(s, b, s_idx.saturating_sub(run_length as isize), b_idx.saturating_sub(1), map)
-        } else {
-            0
-        };
         let val1 = num_valid_configs(s, b, s_idx.saturating_sub(1), b_idx, map);
+        let val2 = process_broken_spring(s,b,s_idx,b_idx, map);
         total_valid_configs = val1 + val2;
     }
     map.insert((s_idx, b_idx), total_valid_configs);
     return total_valid_configs;
 }
 
-// fn process_working()
+fn process_broken_spring(s: &str, b: &Vec<usize>, s_idx: isize, b_idx: isize, map: &mut HashMap<(isize, isize), usize>) -> usize {
+    let mut total = 0;
+    let u_s_idx = s_idx as usize;
+    let pop = b[b_idx as usize];
+    let mut valid_run = true;
+    let mut run_length = pop + 1;
+    for i in 0..pop {
+        if (s_idx as isize - i as isize) < 0 {
+            valid_run = false;
+            break;
+        }
+        let test_char = &s[(u_s_idx.saturating_sub(i))..=(u_s_idx.saturating_sub(i))];
+        if test_char == "." {
+            valid_run = false;
+            break;
+        }
+    }
+    if (s_idx as isize - pop as isize) < 0 {
+        run_length = pop;
+    } else if &s[(u_s_idx.saturating_sub(pop))..=(u_s_idx.saturating_sub(pop))] != "#" {
+        run_length = pop + 1;
+    } else {
+        valid_run = false;
+    }
+    if valid_run {
+        total =  num_valid_configs(s, b, s_idx.saturating_sub(run_length as isize), b_idx.saturating_sub(1), map);
+    } else {
+        total =  0_usize;
+    }
+    total
+}
 
 fn efficient_search(test_line: &str, damaged_groups: &[usize], idx: usize, num_broken: usize, damaged_regex: &Regex, working_regex: &Regex) -> usize {
     let mut total = 0_usize;
