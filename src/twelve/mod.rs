@@ -48,10 +48,13 @@ pub fn two() {
 }
 
 fn num_valid_configs(s: &str, b: &Vec<usize>, s_idx: isize, b_idx: isize, map: &mut HashMap<(isize, isize), usize>) -> usize {
+    // check for cached value
     let u_s_idx = s_idx as usize;
     if let Some(v) = map.get(&(s_idx, b_idx)) {
         return *v;
     }
+
+    let mut total_valid_configs = 0_usize;
     if b_idx < 0 {
         if s_idx < 0 {
             map.insert((s_idx, b_idx), 1_usize);
@@ -71,9 +74,7 @@ fn num_valid_configs(s: &str, b: &Vec<usize>, s_idx: isize, b_idx: isize, map: &
         return 0_usize;
     }
     if &s[u_s_idx..(u_s_idx+1)] == "." {
-        let val = num_valid_configs(s, b, s_idx.saturating_sub(1), b_idx, map);
-        map.insert((s_idx, b_idx), val);
-        return val;
+        total_valid_configs = num_valid_configs(s, b, s_idx.saturating_sub(1), b_idx, map);
     } else if &s[u_s_idx..(u_s_idx+1)] == "#" {
         // pop last broken group val
         let pop = b[b_idx as usize];
@@ -98,11 +99,9 @@ fn num_valid_configs(s: &str, b: &Vec<usize>, s_idx: isize, b_idx: isize, map: &
             valid_run = false;
         }
         if valid_run {
-            let val = num_valid_configs(s, b, s_idx.saturating_sub(run_length as isize), b_idx.saturating_sub(1), map);
-            map.insert((s_idx, b_idx), val);
-            return val;
+            total_valid_configs =  num_valid_configs(s, b, s_idx.saturating_sub(run_length as isize), b_idx.saturating_sub(1), map);
         } else {
-            return 0;
+            total_valid_configs =  0_usize;
         }
     } else {
         let pop = b[b_idx as usize];
@@ -132,10 +131,13 @@ fn num_valid_configs(s: &str, b: &Vec<usize>, s_idx: isize, b_idx: isize, map: &
             0
         };
         let val1 = num_valid_configs(s, b, s_idx.saturating_sub(1), b_idx, map);
-        map.insert((s_idx, b_idx), val1+val2);
-        return val1 + val2;
+        total_valid_configs = val1 + val2;
     }
+    map.insert((s_idx, b_idx), total_valid_configs);
+    return total_valid_configs;
 }
+
+// fn process_working()
 
 fn efficient_search(test_line: &str, damaged_groups: &[usize], idx: usize, num_broken: usize, damaged_regex: &Regex, working_regex: &Regex) -> usize {
     let mut total = 0_usize;
