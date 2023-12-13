@@ -1,4 +1,4 @@
-use std::{collections::HashMap, thread::current, ops::ControlFlow};
+use std::{collections::HashMap, ops::ControlFlow};
 
 use aocd::*;
 use regex::Regex;

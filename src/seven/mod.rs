@@ -14,7 +14,7 @@ pub fn one() {
                 .captures_iter(line)
                 .map(|c| c.extract::<2>())
                 .collect();
-            let mut hand_chars: Vec<_> = caps.get(0).unwrap().1[0]
+            let hand_chars: Vec<_> = caps.get(0).unwrap().1[0]
                 .chars()
                 .map(|c| {
                     return if c == 'T' {
@@ -57,7 +57,7 @@ pub fn two() {
                 .captures_iter(line)
                 .map(|c| c.extract::<2>())
                 .collect();
-            let mut hand_chars: Vec<_> = caps.get(0).unwrap().1[0]
+            let hand_chars: Vec<_> = caps.get(0).unwrap().1[0]
                 .chars()
                 .map(|c| {
                     return if c == 'T' {

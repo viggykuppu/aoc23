@@ -1,6 +1,6 @@
+#![allow(dead_code, unused_variables)]
 mod five;
 mod four;
-mod lib;
 mod one;
 mod seven;
 mod six;
@@ -10,8 +10,10 @@ mod eight;
 mod nine;
 mod ten;
 mod eleven;
+mod twelve;
+mod thirteen;
 
 fn main() {
-    eleven::one();
-    eleven::two();
+    thirteen::one();
+    thirteen::two();
 }
