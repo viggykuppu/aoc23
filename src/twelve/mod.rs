@@ -33,16 +33,13 @@ pub fn two() {
         truth.push(',');
         truth = truth.repeat(repeat_count);
         truth.pop();
-        // println!("{base_line} {truth}");
         let mut damaged_groups: Vec<usize> = line.split(' ').collect::<Vec<&str>>()[1].split(',').map(|n| {
             n.parse::<usize>().unwrap()
         }).collect();
         damaged_groups = damaged_groups.repeat(repeat_count);
-        let damaged_regex = Regex::new(r"#+").unwrap();
-        let working_regex = Regex::new(r"\.+").unwrap();
         let total_broken: usize = damaged_groups.iter().sum();
         let mut map = HashMap::new();
-        let test_total = r(&base_line, &damaged_groups, base_line.len() as isize - 1, damaged_groups.len() as isize - 1, &damaged_regex, &working_regex, &mut map);
+        let test_total = num_valid_configs(&base_line, &damaged_groups, base_line.len() as isize - 1, damaged_groups.len() as isize - 1, &mut map);
         i += 1;
         test_total
     }).sum();
@@ -50,31 +47,31 @@ pub fn two() {
     submit!(2, total_valid_configs);
 }
 
-fn r(s: &str, b: &Vec<usize>, s_idx: isize, b_idx: isize, damaged_regex: &Regex, working_regex: &Regex, map: &mut HashMap<(isize, isize), usize>) -> usize {
+fn num_valid_configs(s: &str, b: &Vec<usize>, s_idx: isize, b_idx: isize, map: &mut HashMap<(isize, isize), usize>) -> usize {
     let u_s_idx = s_idx as usize;
     if let Some(v) = map.get(&(s_idx, b_idx)) {
         return *v;
     }
     if b_idx < 0 {
         if s_idx < 0 {
+            map.insert((s_idx, b_idx), 1_usize);
             return 1_usize;
         }
         for i in 0..=u_s_idx {
             if &s[i..=i] == "#" {
+                map.insert((s_idx, b_idx), 0_usize);
                 return 0_usize;
             }
         }
+        map.insert((s_idx, b_idx), 1_usize);
         return 1_usize;
     }
     if s_idx < 0 {
+        map.insert((s_idx, b_idx), 0_usize);
         return 0_usize;
     }
-    if s_idx < 4 {
-        let val = efficient_search(&s[0..=u_s_idx], &b[0..=(b_idx as usize)], 0, 0, damaged_regex, working_regex);
-        map.insert((s_idx, b_idx), val);
-        return val;
-    } else if &s[u_s_idx..(u_s_idx+1)] == "." {
-        let val = r(s, b, s_idx.saturating_sub(1), b_idx, damaged_regex, working_regex, map);
+    if &s[u_s_idx..(u_s_idx+1)] == "." {
+        let val = num_valid_configs(s, b, s_idx.saturating_sub(1), b_idx, map);
         map.insert((s_idx, b_idx), val);
         return val;
     } else if &s[u_s_idx..(u_s_idx+1)] == "#" {
@@ -101,7 +98,7 @@ fn r(s: &str, b: &Vec<usize>, s_idx: isize, b_idx: isize, damaged_regex: &Regex,
             valid_run = false;
         }
         if valid_run {
-            let val = r(s, b, s_idx.saturating_sub(run_length as isize), b_idx.saturating_sub(1), damaged_regex, working_regex, map);
+            let val = num_valid_configs(s, b, s_idx.saturating_sub(run_length as isize), b_idx.saturating_sub(1), map);
             map.insert((s_idx, b_idx), val);
             return val;
         } else {
@@ -130,11 +127,11 @@ fn r(s: &str, b: &Vec<usize>, s_idx: isize, b_idx: isize, damaged_regex: &Regex,
             valid_run = false;
         }
         let val2 = if valid_run {
-            r(s, b, s_idx.saturating_sub(run_length as isize), b_idx.saturating_sub(1), damaged_regex, working_regex, map)
+            num_valid_configs(s, b, s_idx.saturating_sub(run_length as isize), b_idx.saturating_sub(1), map)
         } else {
             0
         };
-        let val1 = r(s, b, s_idx.saturating_sub(1), b_idx, damaged_regex, working_regex, map);
+        let val1 = num_valid_configs(s, b, s_idx.saturating_sub(1), b_idx, map);
         map.insert((s_idx, b_idx), val1+val2);
         return val1 + val2;
     }

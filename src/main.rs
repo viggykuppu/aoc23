@@ -14,6 +14,6 @@ mod twelve;
 mod thirteen;
 
 fn main() {
-    thirteen::one();
-    thirteen::two();
+    twelve::one();
+    twelve::two();
 }
