@@ -91,7 +91,7 @@ fn num_valid_configs(s: &str, b: &Vec<usize>, s_idx: isize, b_idx: isize, map: &
 }
 
 fn process_broken_spring(s: &str, b: &Vec<usize>, s_idx: isize, b_idx: isize, map: &mut HashMap<(isize, isize), usize>) -> usize {
-    let mut total = 0;
+    let total;
     let u_s_idx = s_idx as usize;
     let pop = b[b_idx as usize];
     let mut valid_run = true;
