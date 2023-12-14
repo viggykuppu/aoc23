@@ -4,10 +4,9 @@ use aocd::*;
 
 #[aocd(2023,13)]
 pub fn one() {
-    let mut total = 0;
     let binding = input!();
-    binding.split("\n\n").for_each(|mirror| {
-        total += get_mirror_value(&mirror.split('\n').collect(), 0);
+    let total = binding.split("\n\n").fold(0, |acc, mirror| {
+        acc + get_mirror_value(&mirror.split('\n').collect(), 0)
     });
 
     submit!(1, total);
@@ -15,10 +14,9 @@ pub fn one() {
 
 #[aocd(2023,13)]
 pub fn two() {
-    let mut total = 0;
     let binding = input!();
-    binding.split("\n\n").for_each(|mirror| {
-        total += get_mirror_value(&mirror.split('\n').collect(), 1);
+    let total = binding.split("\n\n").fold(0, |acc, mirror| {
+        acc + get_mirror_value(&mirror.split('\n').collect(), 1)
     });
 
     submit!(2, total);
