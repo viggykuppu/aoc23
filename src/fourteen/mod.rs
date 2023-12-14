@@ -1,7 +1,7 @@
 use std::collections::{HashMap, HashSet};
 
 use aocd::*;
-use num::Float;
+
 
 #[aocd(2023,14)]
 pub fn one() {
@@ -29,7 +29,7 @@ pub fn one() {
 pub fn two() {
     let binding = input!();
     let dish: Vec<Vec<char>> = binding.lines().map(|line| line.chars().collect()).collect();
-    let mut load: usize = 0;
+    let load: usize = 0;
     let mut rounds: Vec<(usize, usize)> = Vec::new();
     let mut squares: HashSet<(i32, i32)> = HashSet::new();
     for i in -1..=dish.len() as i32 {
@@ -109,7 +109,7 @@ pub fn two() {
                 *offset += 1;
                 r.0 = (rock.0 + *offset) as usize;
             } else {
-                offsets.insert((rock.0*10 + rock.1), 1);
+                offsets.insert(rock.0*10 + rock.1, 1);
                 r.0 = (rock.0 + 1) as usize;
             }
         }
@@ -123,7 +123,7 @@ pub fn two() {
                 *offset += 1;
                 r.1 = (rock.1 + *offset) as usize;
             } else {
-                offsets.insert((rock.0*10 + rock.1), 1);
+                offsets.insert(rock.0*10 + rock.1, 1);
                 r.1 = (rock.1 + 1) as usize;
             }
         }
@@ -137,7 +137,7 @@ pub fn two() {
                 *offset += 1;
                 r.0 = (rock.0 - *offset) as usize;
             } else {
-                offsets.insert((rock.0*10 + rock.1), 1);
+                offsets.insert(rock.0*10 + rock.1, 1);
                 r.0 = (rock.0 - 1) as usize;
             }
         }
@@ -151,7 +151,7 @@ pub fn two() {
                 *offset += 1;
                 r.1 = (rock.1 - *offset) as usize;
             } else {
-                offsets.insert((rock.0*10 + rock.1), 1);
+                offsets.insert(rock.0*10 + rock.1, 1);
                 r.1 = (rock.1 - 1) as usize;
             }
         }
