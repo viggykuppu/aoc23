@@ -5,16 +5,9 @@ use aocd::*;
 #[aocd(2023,13)]
 pub fn one() {
     let mut total = 0;
-    let mut binding = input!();
-    binding.push_str("\n\n");
-    let mut current_mirror: Vec<&str> = Vec::new();
-    binding.lines().for_each(|line| {
-        if !line.is_empty() {
-            current_mirror.push(line);
-        } else {
-            total += get_mirror_value(&current_mirror, 0);
-            current_mirror.clear();
-        }
+    let binding = input!();
+    binding.split("\n\n").for_each(|mirror| {
+        total += get_mirror_value(&mirror.split('\n').collect(), 0);
     });
 
     submit!(1, total);
@@ -23,16 +16,9 @@ pub fn one() {
 #[aocd(2023,13)]
 pub fn two() {
     let mut total = 0;
-    let mut binding = input!();
-    binding.push_str("\n\n");
-    let mut current_mirror: Vec<&str> = Vec::new();
-    binding.lines().for_each(|line| {
-        if !line.is_empty() {
-            current_mirror.push(line);
-        } else {
-            total += get_mirror_value(&current_mirror, 1);
-            current_mirror.clear();
-        }
+    let binding = input!();
+    binding.split("\n\n").for_each(|mirror| {
+        total += get_mirror_value(&mirror.split('\n').collect(), 1);
     });
 
     submit!(2, total);
