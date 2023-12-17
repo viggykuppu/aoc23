@@ -42,6 +42,37 @@ pub fn two() {
     submit!(2, max_energy);
 }
 
+#[aocd(2023,16)]
+pub fn two_fast() {
+    // constants
+    let direction_map = HashMap::from([(Direction::UP, (-1, 0)), (Direction::DOWN, (1, 0)),(Direction::LEFT, (0, -1)),(Direction::RIGHT, (0, 1))]);
+
+    let binding = input!();
+    let grid = binding.lines().map(|l| l.chars().collect::<Vec<char>>()).collect::<Vec<Vec<char>>>();
+    let dims = (grid.len(), grid[0].len());
+    let mut max_energy = 0;
+    let mut memo = HashMap::new();
+    for i in 0..grid.len() {
+        let total_energy = r2(&grid, &direction_map, &dims, (0,i as isize), Direction::DOWN, &mut memo, &mut HashSet::new(), &mut HashSet::new()).len();
+        if total_energy > max_energy {
+            max_energy = total_energy;
+        }
+        let total_energy = r2(&grid, &direction_map, &dims, (dims.0 as isize - 1,i as isize), Direction::UP, &mut memo, &mut HashSet::new(), &mut HashSet::new()).len();
+        if total_energy > max_energy {
+            max_energy = total_energy;
+        }
+        let total_energy = r2(&grid, &direction_map, &dims, (i as isize,0), Direction::RIGHT, &mut HashMap::new(), &mut HashSet::new(), &mut HashSet::new()).len();
+        if total_energy > max_energy {
+            max_energy = total_energy;
+        }
+        let total_energy = r2(&grid, &direction_map, &dims, (dims.1 as isize - 1,0), Direction::LEFT, &mut memo, &mut HashSet::new(), &mut HashSet::new()).len();
+        if total_energy > max_energy {
+            max_energy = total_energy;
+        }
+    }
+    submit!(2, max_energy);
+}
+
 fn calculate_energy_recursive(grid: &Vec<Vec<char>>, direction_map: &HashMap<Direction, (isize, isize)>, dims: &(usize, usize), start_position: (isize, isize), start_direction: Direction, visited_positions: &mut HashSet<(isize, isize, Direction)>) -> HashSet<(isize, isize)> {
     let current_space = grid[start_position.0 as usize][start_position.1 as usize];
     let new_directions = get_new_direction(&start_direction, &current_space);
@@ -59,9 +90,9 @@ fn calculate_energy_recursive(grid: &Vec<Vec<char>>, direction_map: &HashMap<Dir
     return visited;
 }
 
-fn r2(grid: &Vec<Vec<char>>, direction_map: &HashMap<Direction, (isize, isize)>, dims: &(usize, usize), start_position: (isize, isize), start_direction: Direction, memo: &mut HashMap<(isize, isize, Direction), Vec<(isize, isize)>>, visited_positions: &mut HashSet<(isize, isize, Direction)>, z: &mut HashSet<(isize, isize)>) -> HashSet<(isize,isize)> {
+fn r2(grid: &Vec<Vec<char>>, direction_map: &HashMap<Direction, (isize, isize)>, dims: &(usize, usize), start_position: (isize, isize), start_direction: Direction, memo: &mut HashMap<(isize, isize, Direction), HashSet<(isize, isize)>>, visited_positions: &mut HashSet<(isize, isize, Direction)>, z: &mut HashSet<(isize, isize)>) -> HashSet<(isize,isize)> {
     if let Some(z) = memo.get(&(start_position.0, start_position.1, start_direction)) {
-        return HashSet::from_iter(z.iter().cloned());
+        return z.clone();
     }
     let current_space = grid[start_position.0 as usize][start_position.1 as usize];
     let new_directions = get_new_direction(&start_direction, &current_space);
@@ -72,11 +103,11 @@ fn r2(grid: &Vec<Vec<char>>, direction_map: &HashMap<Direction, (isize, isize)>,
         let new_position = (start_position.0 + v.0, start_position.1 + v.1);
         if is_valid_index(&new_position, &dims) {
             if !visited_positions.contains(&(new_position.0, new_position.1, direction)) {
-                visited.extend(&calculate_energy_recursive(grid, direction_map, dims, new_position, direction, visited_positions));
+                visited.extend(&r2(grid, direction_map, dims, new_position, direction, memo, visited_positions, z));
             }
         }
     }
-    memo.insert((start_position.0, start_position.1, start_direction), visited.iter().map(|x| *x).collect());
+    memo.insert((start_position.0, start_position.1, start_direction), visited.clone());
     return visited;
 }
 
