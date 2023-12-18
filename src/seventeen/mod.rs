@@ -20,13 +20,15 @@ pub fn two() {
     submit!(2, mimum_heat_loss);
 }
 
-fn calculate_minimum_heat_loss(grid: &Vec<Vec<u32>>, direction_map: &HashMap<Direction, (isize, isize)>, memo: &mut HashSet<(isize, isize, Direction, u8)>, min_straight: u8, max_straight: u8) -> u32 {
+fn calculate_minimum_heat_loss(grid: &Vec<Vec<u32>>, direction_map: &HashMap<Direction, (isize, isize)>, visited: &mut HashSet<(isize, isize, Direction, u8)>, min_straight: u8, max_straight: u8) -> u32 {
     let mut heap = BinaryHeap::new();
+    let goal = ((grid.len() as isize - 1), (grid[0].len() as isize - 1));
     heap.push(Reverse(Node {
         dir: Direction::RIGHT,
         straight_count: 0,
         position: (0, 0),
         distance: 0,
+        goal: goal,
     }));
     let mut current = heap.pop().unwrap();
     loop {
@@ -38,14 +40,15 @@ fn calculate_minimum_heat_loss(grid: &Vec<Vec<u32>>, direction_map: &HashMap<Dir
                 let new_position = (current_position.0 + v.0, current_position.1 + v.1);
                 if is_valid_index(&new_position, grid) {
                     let d = current.0.distance + grid[new_position.0 as usize][new_position.1 as usize];
-                    if !memo.contains(&(new_position.0, new_position.1, *direction, 0)) {
+                    if !visited.contains(&(new_position.0, new_position.1, *direction, 0)) {
                         heap.push(Reverse(Node {
                             dir: *direction,
                             straight_count: 0,
                             position: new_position,
-                            distance: d
+                            distance: d,
+                            goal: goal,
                         }));
-                        memo.insert((new_position.0, new_position.1, *direction, 0));
+                        visited.insert((new_position.0, new_position.1, *direction, 0));
                     }
                 }
             }
@@ -55,19 +58,21 @@ fn calculate_minimum_heat_loss(grid: &Vec<Vec<u32>>, direction_map: &HashMap<Dir
             let straight_position = (current_position.0 + v.0, current_position.1 + v.1);
             if is_valid_index(&straight_position, grid) {
                 let d = current.0.distance + grid[straight_position.0 as usize][straight_position.1 as usize];
-                if !memo.contains(&(straight_position.0, straight_position.1, current_direction, current.0.straight_count + 1)) {
+                if !visited.contains(&(straight_position.0, straight_position.1, current_direction, current.0.straight_count + 1)) {
                     heap.push(Reverse(Node {
                         dir: current_direction,
                         straight_count: current.0.straight_count + 1,
                         position: straight_position,
-                        distance: current.0.distance + grid[straight_position.0 as usize][straight_position.1 as usize]
+                        distance: d,
+                        goal: goal,
                     }));
-                    memo.insert((straight_position.0, straight_position.1, current_direction, current.0.straight_count + 1));
+                    visited.insert((straight_position.0, straight_position.1, current_direction, current.0.straight_count + 1));
                 }
             }
         }
         current = heap.pop().unwrap();
-        if current.0.position.0 == (grid.len() as isize - 1) && current.0.position.1 == (grid[0].len() as isize - 1) {
+        if current.0.position.0 == (grid.len() as isize - 1) && current.0.position.1 == (grid[0].len() as isize - 1) && current.0.straight_count >= (min_straight - 1) {
+            println!("checked nodes {}", visited.len());
             break;
         }
     }
@@ -80,17 +85,24 @@ struct Node {
     straight_count: u8,
     position: (isize, isize),
     distance: u32,
+    goal: (isize, isize)
+}
+
+impl Node {
+    fn h(&self ) -> u32 {
+        return self.distance + (self.position.0 - self.goal.0).abs() as u32 + (self.position.1 - self.goal.1).abs() as u32;
+    }
 }
 
 impl PartialOrd for Node {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        self.distance.partial_cmp(&other.distance)
+        self.h().partial_cmp(&other.h())
     }
 }
 
 impl Ord for Node {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        self.distance.cmp(&other.distance)
+        self.h().cmp(&other.h())
     }
 }
 
