@@ -90,7 +90,7 @@ struct Node {
 
 impl Node {
     fn h(&self ) -> u32 {
-        return self.distance + (self.position.0 - self.goal.0).abs() as u32 + (self.position.1 - self.goal.1).abs() as u32;
+        return self.distance + (self.position.0 - self.goal.0).abs() as u32 + 2*(self.position.1 - self.goal.1).abs() as u32;
     }
 }
 

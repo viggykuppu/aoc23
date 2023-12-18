@@ -16,8 +16,9 @@ mod fourteen;
 mod fifteen;
 mod sixteen;
 mod seventeen;
+mod eighteen;
 
 fn main() {
-    seventeen::one();
-    seventeen::two();
+    eighteen::one();
+    eighteen::two();
 }
