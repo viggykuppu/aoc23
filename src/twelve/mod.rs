@@ -55,7 +55,7 @@ fn num_valid_configs(s: &str, b: &Vec<usize>, s_idx: isize, b_idx: isize, map: &
     }
 
     // base cases
-    let mut total_valid_configs = 0_usize;
+    let total_valid_configs;
     if b_idx < 0 {
         if s_idx < 0 {
             map.insert((s_idx, b_idx), 1_usize);

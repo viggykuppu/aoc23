@@ -1,4 +1,4 @@
-use std::{collections::{HashMap, HashSet, BinaryHeap}, thread::current, cmp::Reverse};
+use std::{collections::{HashMap, HashSet, BinaryHeap}, cmp::Reverse};
 
 use aocd::*;
 
