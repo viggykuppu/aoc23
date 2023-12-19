@@ -3,8 +3,96 @@ use std::collections::{HashMap, BTreeSet};
 use aocd::*;
 use regex::Regex;
 
+
 #[aocd(2023,18)]
 pub fn one() {
+    let binding = input!();
+    let direction_map = HashMap::from([(Direction::UP, (-1, 0)), (Direction::DOWN, (1, 0)),(Direction::LEFT, (0, -1)),(Direction::RIGHT, (0, 1))]);
+    let right_node = HashMap::from([(Direction::UP, (0, 1)), (Direction::DOWN, (0, -1)),(Direction::LEFT, (-1, 0)),(Direction::RIGHT, (1, 0))]);
+    let instruction_regex = Regex::new(r"(\S) (\d+) \((\S*)\)").unwrap();
+    let instructions: Vec<_> = binding.lines().map(|line| {
+        let c: Vec<_> = instruction_regex.captures_iter(line).map(|c| c.extract::<3>()).collect();
+        let direction = match c[0].1[0] {
+            "U" => Direction::UP,
+            "L" => Direction::LEFT,
+            "R" => Direction::RIGHT,
+            "D" => Direction::DOWN,
+            _ => Direction::UP
+        };
+        let distance = c[0].1[1].parse::<u32>().unwrap();
+        Instruction {
+            direction: direction,
+            distance: distance,
+        }
+    }).collect();
+    let mut current = (0,0);
+    let mut total_border_distance = 0;
+    let vertices: Vec<_> = instructions.iter().map(|i| {
+        let v = direction_map[&i.direction];
+        current.0 += v.0*(i.distance as isize);
+        current.1 += v.1*(i.distance as isize);
+        total_border_distance += i.distance;
+        current.clone()
+    }).collect();
+    let area = shoelace(&vertices);
+    let volume = picks(total_border_distance, area);
+    submit!(1, volume);
+}
+
+#[aocd(2023,18)]
+pub fn two() {
+    let binding = input!();
+    let direction_map = HashMap::from([(Direction::UP, (-1, 0)), (Direction::DOWN, (1, 0)),(Direction::LEFT, (0, -1)),(Direction::RIGHT, (0, 1))]);
+    let right_node = HashMap::from([(Direction::UP, (0, 1)), (Direction::DOWN, (0, -1)),(Direction::LEFT, (-1, 0)),(Direction::RIGHT, (1, 0))]);
+    let instruction_regex = Regex::new(r"\(\#(.*)\)").unwrap();
+    let instructions: Vec<_> = binding.lines().map(|line| {
+        let c: Vec<_> = instruction_regex.captures_iter(line).map(|c| c.extract::<1>()).collect();
+        let hex_code = c[0].1[0];
+        let direction = match hex_code.chars().last().unwrap() {
+            '3' => Direction::UP,
+            '2' => Direction::LEFT,
+            '0' => Direction::RIGHT,
+            '1' => Direction::DOWN,
+            _ => Direction::UP
+        };
+        let distance = u32::from_str_radix(&hex_code[0..(hex_code.len()-1)], 16).unwrap();
+        Instruction {
+            direction: direction,
+            distance: distance,
+        }
+    }).collect();
+    let mut current = (0,0);
+    let mut total_border_distance = 0;
+    let vertices: Vec<_> = instructions.iter().map(|i| {
+        let v = direction_map[&i.direction];
+        current.0 += v.0*(i.distance as isize);
+        current.1 += v.1*(i.distance as isize);
+        total_border_distance += i.distance;
+        current.clone()
+    }).collect();
+    let area = shoelace(&vertices);
+    let volume = picks(total_border_distance, area);
+    submit!(2, volume);
+}
+
+fn shoelace(vertices: &Vec<(isize, isize)>) -> u64 {
+    let mut total = 0;
+    for i in 0..vertices.len() {
+        let current = vertices[i];
+        let next = vertices[(i+1) % vertices.len()];
+        
+        total += (next.0 + current.0)*(next.1 - current.1);
+    }
+    (total.abs() as u64)/2
+}
+
+// modified pick's theorem to return i + b = A + b/2 + 1
+fn picks(total_border_distance: u32, area: u64) -> u64 {
+    return area + (total_border_distance as u64)/2 + 1;
+}
+
+#[aocd(2023,18)]
+pub fn one_slow() {
     let binding = input!();
     let direction_map = HashMap::from([(Direction::UP, (-1, 0)), (Direction::DOWN, (1, 0)),(Direction::LEFT, (0, -1)),(Direction::RIGHT, (0, 1))]);
     let right_node = HashMap::from([(Direction::UP, (0, 1)), (Direction::DOWN, (0, -1)),(Direction::LEFT, (-1, 0)),(Direction::RIGHT, (1, 0))]);
@@ -96,7 +184,7 @@ pub fn one() {
 }
 
 #[aocd(2023,18)]
-pub fn two() {
+pub fn two_slow() {
     let binding = input!();
     let direction_map = HashMap::from([(Direction::UP, (-1, 0)), (Direction::DOWN, (1, 0)),(Direction::LEFT, (0, -1)),(Direction::RIGHT, (0, 1))]);
     let right_node = HashMap::from([(Direction::UP, (0, 1)), (Direction::DOWN, (0, -1)),(Direction::LEFT, (-1, 0)),(Direction::RIGHT, (1, 0))]);
@@ -200,6 +288,7 @@ pub fn two() {
 
     submit!(2, volume);
 }
+
 
 fn insert(row: usize, column: (usize, usize, bool), z: &mut HashMap<usize, BTreeSet<(usize, usize, bool)>>) {
     if !z.contains_key(&row) {
