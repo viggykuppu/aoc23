@@ -23,13 +23,7 @@ pub fn two() {
 fn calculate_minimum_heat_loss(grid: &Vec<Vec<u32>>, direction_map: &HashMap<Direction, (isize, isize)>, visited: &mut HashSet<(isize, isize, Direction, u8)>, min_straight: u8, max_straight: u8) -> u32 {
     let mut heap = BinaryHeap::new();
     let goal = ((grid.len() as isize - 1), (grid[0].len() as isize - 1));
-    heap.push(Reverse(Node {
-        dir: Direction::RIGHT,
-        straight_count: 0,
-        position: (0, 0),
-        distance: 0,
-        goal: goal,
-    }));
+    heap.push(Reverse(Node::new(Direction::RIGHT,0, (0, 0), 0, goal)));
     let mut current = heap.pop().unwrap();
     loop {
         let current_direction = current.0.dir;
@@ -41,13 +35,7 @@ fn calculate_minimum_heat_loss(grid: &Vec<Vec<u32>>, direction_map: &HashMap<Dir
                 if is_valid_index(&new_position, grid) {
                     let d = current.0.distance + grid[new_position.0 as usize][new_position.1 as usize];
                     if !visited.contains(&(new_position.0, new_position.1, *direction, 0)) {
-                        heap.push(Reverse(Node {
-                            dir: *direction,
-                            straight_count: 0,
-                            position: new_position,
-                            distance: d,
-                            goal: goal,
-                        }));
+                        heap.push(Reverse(Node::new(*direction,0, new_position, d, goal)));
                         visited.insert((new_position.0, new_position.1, *direction, 0));
                     }
                 }
@@ -59,13 +47,7 @@ fn calculate_minimum_heat_loss(grid: &Vec<Vec<u32>>, direction_map: &HashMap<Dir
             if is_valid_index(&straight_position, grid) {
                 let d = current.0.distance + grid[straight_position.0 as usize][straight_position.1 as usize];
                 if !visited.contains(&(straight_position.0, straight_position.1, current_direction, current.0.straight_count + 1)) {
-                    heap.push(Reverse(Node {
-                        dir: current_direction,
-                        straight_count: current.0.straight_count + 1,
-                        position: straight_position,
-                        distance: d,
-                        goal: goal,
-                    }));
+                    heap.push(Reverse(Node::new(current_direction,current.0.straight_count + 1, straight_position, d, goal)));
                     visited.insert((straight_position.0, straight_position.1, current_direction, current.0.straight_count + 1));
                 }
             }
@@ -85,24 +67,36 @@ struct Node {
     straight_count: u8,
     position: (isize, isize),
     distance: u32,
-    goal: (isize, isize)
+    goal: (isize, isize),
+    f: u32,
 }
 
 impl Node {
-    fn h(&self ) -> u32 {
-        return self.distance + (self.position.0 - self.goal.0).abs() as u32 + 2*(self.position.1 - self.goal.1).abs() as u32;
+    fn new(dir: Direction, straight_count: u8, position: (isize, isize), distance: u32, goal: (isize, isize)) -> Self {
+        Node {
+            dir: dir,
+            straight_count: straight_count,
+            position: position,
+            distance: distance,
+            goal: goal,
+            f: distance + Self::h(position, goal),
+        }
     }
+
+    fn h(position: (isize, isize), goal: (isize, isize)) -> u32 {
+        return (position.0 - goal.0).abs() as u32 + 2*(position.1 - goal.1).abs() as u32;
+    }    
 }
 
 impl PartialOrd for Node {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        self.h().partial_cmp(&other.h())
+        self.f.partial_cmp(&other.f)
     }
 }
 
 impl Ord for Node {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        self.h().cmp(&other.h())
+        self.f.cmp(&other.f)
     }
 }
 
