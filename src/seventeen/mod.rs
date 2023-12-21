@@ -104,7 +104,7 @@ impl Ord for Node {
 fn is_valid_index(test_idx: &(isize, isize), grid: &Vec<Vec<u32>>) -> bool {
     return test_idx.0 >= 0 && test_idx.0 < grid.len() as isize
         && test_idx.1 >= 0 && test_idx.1 < grid[0].len() as isize;
-}
+}   
 
 fn get_turn_directions(current_direction: &Direction) -> [Direction; 2] {
     match current_direction {
