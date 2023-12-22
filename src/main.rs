@@ -20,8 +20,9 @@ mod eighteen;
 mod nineteen;
 mod twenty;
 mod twentyone;
+mod twentytwo;
 
 fn main() {
-    twentyone::one();
+    twentytwo::one();
     // twentyone::two();
 }

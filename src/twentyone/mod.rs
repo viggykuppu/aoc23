@@ -24,7 +24,7 @@ pub fn one() {
     // println!("visited {:?}", visited_nodes);
     let num_possible_positions = visited_nodes.iter().filter(|n| n.2 == num_steps).count();
     println!("unique odd corners {}", visited_nodes.iter().filter(|n| (n.0 - 65).abs() + (n.1 - 65).abs() > 65 && n.2 % 2 == 1).unique_by(|n| (n.0, n.1)).count());
-    println!("unique odd corners {}", visited_nodes.iter().filter(|n| (n.0 - 65).abs() + (n.1 - 65).abs() > 65 && n.2 % 2 == 0).unique_by(|n| (n.0, n.1)).count());
+    println!("unique even corners {}", visited_nodes.iter().filter(|n| (n.0 - 65).abs() + (n.1 - 65).abs() > 65 && n.2 % 2 == 0).unique_by(|n| (n.0, n.1)).count());
     submit!(1, num_possible_positions);
 }
 
