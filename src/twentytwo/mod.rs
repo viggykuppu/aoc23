@@ -7,20 +7,9 @@ use regex::Regex;
 #[aocd(2023, 22)]
 pub fn one() {
     let binding = input!();
-    let brick_regex = Regex::new(r"(\d+,\d+,\d+)~(\d+,\d+,\d+)").unwrap();
-    let char_offset = 1;
-    let mut bricks: Vec<_> = binding.lines().enumerate().map(|(i, line)| {
-        let caps: Vec<_> = brick_regex.captures_iter(line).collect();
-        let caps = caps.get(0).unwrap();
-        let first: Vec<_> = caps.get(1).unwrap().as_str().split(",").map(|d| d.parse::<usize>().unwrap()).collect();
-        let second: Vec<_> = caps.get(2).unwrap().as_str().split(",").map(|d| d.parse::<usize>().unwrap()).collect();
-        Brick {
-            label: char_offset + i,
-            position: (first[0]..=second[0],first[1]..=second[1],first[2]..=second[2])
-        }
-    }).collect();
+    let mut bricks: Vec<_> = build_bricks(binding);
 
-    let height_map = let_bricks_fall(&mut bricks);
+    let_bricks_fall(&mut bricks);
 
     let mut brick_tops_at_z: HashMap<usize, Vec<&Brick>> = HashMap::new();
     let mut brick_bottoms_at_z: HashMap<usize, Vec<&Brick>> = HashMap::new();
@@ -56,13 +45,84 @@ pub fn one() {
         }
     }
 
-    let max_x = bricks.iter().map(|b| b.position.0.end()).max().unwrap().clone();
-    let max_y = bricks.iter().map(|b| b.position.1.end()).max().unwrap().clone();
-
     submit!(1, bricks.len() - single_brick_supports.len());
 }
 
-fn let_bricks_fall(bricks: &mut Vec<Brick>) -> HashMap<(usize, usize), usize> {
+#[aocd(2023,22)]
+pub fn two() {
+    let binding = input!();
+    let mut bricks: Vec<_> = build_bricks(binding);
+
+    let_bricks_fall(&mut bricks);
+
+    let mut brick_tops_at_z: HashMap<usize, Vec<&Brick>> = HashMap::new();
+    let mut brick_bottoms_at_z: HashMap<usize, Vec<&Brick>> = HashMap::new();
+    let mut single_brick_supports: HashSet<(usize, usize)> = HashSet::new();
+    for brick in &bricks {
+        if let None = brick_bottoms_at_z.get(brick.position.2.start()) {
+            brick_bottoms_at_z.insert(*brick.position.2.start(), Vec::new());
+        }
+        if let None = brick_tops_at_z.get(brick.position.2.end()) {
+            brick_tops_at_z.insert(*brick.position.2.end(), Vec::new());
+        }
+        brick_bottoms_at_z.get_mut(brick.position.2.start()).unwrap().push(brick);
+        brick_tops_at_z.get_mut(brick.position.2.end()).unwrap().push(brick);
+    }
+    let mut supported_by_map: HashMap<usize, HashSet<usize>> = HashMap::new();
+    for z in brick_bottoms_at_z.keys().sorted().skip(1) {
+        let bricks_to_check = brick_bottoms_at_z.get(z).unwrap();
+        let below_bricks = brick_tops_at_z.get(&(z-1)).unwrap();
+        for brick_to_check in bricks_to_check {
+            supported_by_map.insert(brick_to_check.label, HashSet::new());
+            let supporters = supported_by_map.get_mut(&brick_to_check.label).unwrap();
+            let mut supporting_bricks = Vec::new();
+            for below_brick in below_bricks {
+                if brick_to_check.overlaps_xy(below_brick) {
+                    supporting_bricks.push(below_brick);
+                    supporters.insert(below_brick.label);
+                }
+            }
+            if supporting_bricks.len() == 1 {
+                single_brick_supports.insert((supporting_bricks.first().unwrap().label, *brick_to_check.position.2.start()));
+            }
+            if supporting_bricks.len() == 0 {
+                panic!();
+            }
+        }
+    }
+    let mut total_fallen_bricks = 0;
+    for single_brick_support in single_brick_supports.iter() {
+        let brick_to_remove = single_brick_support.0;
+        let first_row_with_bricks_falling = single_brick_support.1;
+        let mut removed_bricks = HashSet::from([brick_to_remove]);
+        for z in brick_bottoms_at_z.keys().filter(|k| **k >= first_row_with_bricks_falling).sorted() {
+            let potential_fallers = brick_bottoms_at_z.get(z).unwrap();
+            for b in potential_fallers {
+                if supported_by_map.get(&b.label).unwrap().is_subset(&removed_bricks) {
+                    removed_bricks.insert(b.label);
+                }
+            }
+        }
+        total_fallen_bricks += removed_bricks.len() - 1;
+    }
+    submit!(2, total_fallen_bricks)
+}
+
+fn build_bricks(input: String) -> Vec<Brick> {
+    let brick_regex = Regex::new(r"(\d+,\d+,\d+)~(\d+,\d+,\d+)").unwrap();
+    input.lines().enumerate().map(|(i, line)| {
+        let caps: Vec<_> = brick_regex.captures_iter(line).collect();
+        let caps = caps.get(0).unwrap();
+        let first: Vec<_> = caps.get(1).unwrap().as_str().split(",").map(|d| d.parse::<usize>().unwrap()).collect();
+        let second: Vec<_> = caps.get(2).unwrap().as_str().split(",").map(|d| d.parse::<usize>().unwrap()).collect();
+        Brick {
+            label: i,
+            position: (first[0]..=second[0],first[1]..=second[1],first[2]..=second[2])
+        }
+    }).collect()
+}
+
+fn let_bricks_fall(bricks: &mut Vec<Brick>) {
     let max_x = bricks.iter().map(|b| b.position.0.end()).max().unwrap().clone();
     let max_y = bricks.iter().map(|b| b.position.1.end()).max().unwrap().clone();
     bricks.sort_by(|b1, b2| {
@@ -114,8 +174,6 @@ fn let_bricks_fall(bricks: &mut Vec<Brick>) -> HashMap<(usize, usize), usize> {
             height_map.insert(x_y, *brick.position.2.end());
         }
     }
-    height_map
-    // println!("{}",height_map.get(&(7,8)).unwrap());
 }
 
 #[derive(Debug)]
@@ -145,19 +203,5 @@ impl Brick {
             || self.position.1.contains(other.position.1.end())
             || other.position.1.contains(self.position.1.start());
         return overlaps_x & overlaps_y;
-    }
-
-    pub fn overlaps_xy_2(&self, other: &Brick) -> bool {
-        for x in self.position.0.clone() {
-            if other.position.0.contains(&x) {
-                return true;
-            }
-        }
-        for y in self.position.1.clone() {
-            if other.position.1.contains(&y) {
-                return true;
-            }
-        }
-        return false;
     }
 }
