@@ -1,79 +1,74 @@
 use std::{collections::{HashMap, HashSet}, ops::{RangeInclusive, Range}};
 
 use aocd::*;
+use itertools::Itertools;
 use regex::Regex;
 
-#[aocd(2023, 22, "src/twentytwo/input.txt")]
+#[aocd(2023, 22)]
 pub fn one() {
     let binding = input!();
     let brick_regex = Regex::new(r"(\d+,\d+,\d+)~(\d+,\d+,\d+)").unwrap();
-    let char_offset = 65_u8;
+    let char_offset = 1;
     let mut bricks: Vec<_> = binding.lines().enumerate().map(|(i, line)| {
         let caps: Vec<_> = brick_regex.captures_iter(line).collect();
         let caps = caps.get(0).unwrap();
         let first: Vec<_> = caps.get(1).unwrap().as_str().split(",").map(|d| d.parse::<usize>().unwrap()).collect();
         let second: Vec<_> = caps.get(2).unwrap().as_str().split(",").map(|d| d.parse::<usize>().unwrap()).collect();
         Brick {
-            label: (char_offset + i as u8) as char,
+            label: char_offset + i,
             position: (first[0]..=second[0],first[1]..=second[1],first[2]..=second[2])
         }
     }).collect();
 
-    let_bricks_fall(&mut bricks);
-    println!("{:?}", bricks);
+    let height_map = let_bricks_fall(&mut bricks);
 
-    let mut bricks_by_z: HashMap<usize, Vec<&Brick>> = HashMap::new();
+    let mut brick_tops_at_z: HashMap<usize, Vec<&Brick>> = HashMap::new();
+    let mut brick_bottoms_at_z: HashMap<usize, Vec<&Brick>> = HashMap::new();
+    let mut single_brick_supports: HashSet<usize> = HashSet::new();
     for brick in &bricks {
-        if let None = bricks_by_z.get(brick.position.2.start()) {
-            bricks_by_z.insert(*brick.position.2.start(), Vec::new());
+        if let None = brick_bottoms_at_z.get(brick.position.2.start()) {
+            brick_bottoms_at_z.insert(*brick.position.2.start(), Vec::new());
         }
-        bricks_by_z.get_mut(brick.position.2.start()).unwrap().push(brick);
+        if let None = brick_tops_at_z.get(brick.position.2.end()) {
+            brick_tops_at_z.insert(*brick.position.2.end(), Vec::new());
+        }
+        brick_bottoms_at_z.get_mut(brick.position.2.start()).unwrap().push(brick);
+        brick_tops_at_z.get_mut(brick.position.2.end()).unwrap().push(brick);
     }
-
-    let mut z_idx = 2;
-    let mut destructible_bricks: HashSet<char> = HashSet::new();
-    loop {
-        if let Some(bricks_on_z) = bricks_by_z.get(&z_idx) {
-            let bricks_below = bricks_by_z.get(&(z_idx - 1)).unwrap();
-            for i in 0..bricks_on_z.len() {
-                let brick = bricks_on_z.get(i).unwrap();
-                let mut supporting_bricks: HashSet<char> = HashSet::new();
-                for j in 0..bricks_below.len() {
-                    let below_brick = bricks_below.get(j).unwrap();
-                    for k in brick.position.0.clone() {
-                        if below_brick.position.0.contains(&k) {
-                            supporting_bricks.insert(below_brick.label);
-                            break;
-                        }
-                    }
-                    for k in brick.position.1.clone() {
-                        if below_brick.position.1.contains(&k) {
-                            supporting_bricks.insert(below_brick.label);
-                            break;
-                        }
-                    }
-                }
-                println!("brick {} is supported by {:?}", brick.label, supporting_bricks);
-                if supporting_bricks.len() > 1 {
-                    supporting_bricks.iter().for_each(|brick| {
-                        destructible_bricks.insert(*brick);
-                    });
+    // println!("{:?}", brick_bottoms_at_z);
+    for z in brick_bottoms_at_z.keys().sorted().skip(1) {
+        // println!("{}",z);
+        let bricks_to_check = brick_bottoms_at_z.get(z).unwrap();
+        let below_bricks = brick_tops_at_z.get(&(z-1)).unwrap();
+        for brick_to_check in bricks_to_check {
+            let mut supporting_bricks = Vec::new();
+            for below_brick in below_bricks {
+                if brick_to_check.overlaps_xy(below_brick) {
+                    supporting_bricks.push(below_brick);
                 }
             }
-        } else {
-            break;
+            if supporting_bricks.len() == 1 {
+                single_brick_supports.insert(supporting_bricks.first().unwrap().label);
+            }
+            if supporting_bricks.len() == 0 {
+                panic!();
+            }
         }
-        z_idx += 1;
     }
-    println!("destructible bricks: {:?}", destructible_bricks);
+
+    let max_x = bricks.iter().map(|b| b.position.0.end()).max().unwrap().clone();
+    let max_y = bricks.iter().map(|b| b.position.1.end()).max().unwrap().clone();
+
+    submit!(1, bricks.len() - single_brick_supports.len());
 }
 
-fn let_bricks_fall(bricks: &mut Vec<Brick>) {
+fn let_bricks_fall(bricks: &mut Vec<Brick>) -> HashMap<(usize, usize), usize> {
     let max_x = bricks.iter().map(|b| b.position.0.end()).max().unwrap().clone();
     let max_y = bricks.iter().map(|b| b.position.1.end()).max().unwrap().clone();
     bricks.sort_by(|b1, b2| {
         b1.position.2.start().cmp(&b2.position.2.start())
     });
+    // println!("{:?}", bricks);
     let mut height_map: HashMap<(usize, usize), usize> = HashMap::new();
     for i in 0..=max_x {
         for j in 0..=max_y {
@@ -81,11 +76,9 @@ fn let_bricks_fall(bricks: &mut Vec<Brick>) {
         }
     }
 
-    let mut fallen_bricks: Vec<&Brick> = Vec::new();
-    println!("{:?}", bricks);
     for i in 0..bricks.len() {
         let brick = bricks.get_mut(i).unwrap();
-        println!("brick lens {}, {}, {}", brick.get_x_len(), brick.get_y_len(), brick.get_z_len());
+        // println!("brick lens {}, {}, {}", brick.get_x_len(), brick.get_y_len(), brick.get_z_len());
         if brick.get_x_len() != 0 {
             let mut max_height_below = 0;
             for x in brick.position.0.clone() {
@@ -98,7 +91,7 @@ fn let_bricks_fall(bricks: &mut Vec<Brick>) {
                 let pos = (x, *brick.position.1.start());
                 height_map.insert(pos, max_height_below+1);
             }
-            println!("x case, max height below: {max_height_below}");
+            // println!("x case, max height below: {max_height_below}");
             brick.position.2 = max_height_below+1..=max_height_below+1;
         } else if brick.get_y_len() != 0 {
             let mut max_height_below = 0;
@@ -112,20 +105,22 @@ fn let_bricks_fall(bricks: &mut Vec<Brick>) {
                 let pos = (*brick.position.0.start(), y);
                 height_map.insert(pos, max_height_below+1);
             }
-            println!("y case, max height below: {max_height_below}");
+            // println!("y case, max height below: {max_height_below}");
             brick.position.2 = max_height_below+1..=max_height_below+1;
-        } else if brick.get_z_len() != 0 {
+        } else {
             let x_y = (*brick.position.0.start(), *brick.position.1.start());
             let new_z_start = *height_map.get(&x_y).unwrap() + 1;
             brick.position.2 = (new_z_start)..=(new_z_start + brick.get_z_len());
             height_map.insert(x_y, *brick.position.2.end());
         }
     }
+    height_map
+    // println!("{}",height_map.get(&(7,8)).unwrap());
 }
 
 #[derive(Debug)]
 struct Brick {
-    label: char,
+    label: usize,
     position: (RangeInclusive<usize>,RangeInclusive<usize>,RangeInclusive<usize>)
 }
 
@@ -140,5 +135,29 @@ impl Brick {
 
     pub fn get_z_len(&self) -> usize {
         return self.position.2.end() - self.position.2.start();
+    }
+
+    pub fn overlaps_xy(&self, other: &Brick) -> bool {
+        let overlaps_x = self.position.0.contains(other.position.0.start()) 
+            || self.position.0.contains(other.position.0.end())
+            || other.position.0.contains(self.position.0.start());
+        let overlaps_y = self.position.1.contains(other.position.1.start()) 
+            || self.position.1.contains(other.position.1.end())
+            || other.position.1.contains(self.position.1.start());
+        return overlaps_x & overlaps_y;
+    }
+
+    pub fn overlaps_xy_2(&self, other: &Brick) -> bool {
+        for x in self.position.0.clone() {
+            if other.position.0.contains(&x) {
+                return true;
+            }
+        }
+        for y in self.position.1.clone() {
+            if other.position.1.contains(&y) {
+                return true;
+            }
+        }
+        return false;
     }
 }
