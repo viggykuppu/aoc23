@@ -1,7 +1,6 @@
 use std::collections::{HashMap, HashSet};
 
 use aocd::*;
-use itertools::Itertools;
 
 #[aocd(2023, 23)]
 pub fn one() {
@@ -28,7 +27,7 @@ pub fn one() {
     submit!(1, z);
 }
 
-#[aocd(2023, 23)]
+#[aocd(2023, 23, "src/twentythree/input.txt")]
 pub fn two() {
     let binding = input!();
     let direction_map = HashMap::from([(Direction::UP, (-1, 0)), (Direction::DOWN, (1, 0)),(Direction::LEFT, (0, -1)),(Direction::RIGHT, (0, 1))]);
@@ -38,11 +37,85 @@ pub fn two() {
             ((i as isize,j as isize), c)
         })
     }));
-    let mut groups = HashMap::new();
-    let mut longest_path = HashMap::new();
-    let mut visited= HashSet::new();
-    let z = build_groups_2(&grid, (0,1), (dims.0-1, dims.1-2), &mut groups, &mut longest_path, &mut visited, &direction_map);
-    submit!(2, z);
+    // let mut groups = HashMap::new();
+    // let mut longest_path = HashMap::new();
+    // let mut visited= HashSet::new();
+    // let z = build_groups_2(&grid, (0,1), (dims.0-1, dims.1-2), &mut groups, &mut longest_path, &mut visited, &direction_map);
+    let mut groups: HashMap<_, _> = HashMap::new();
+    let mut visited_by = HashMap::new();
+    reduce_graph(&grid, (0,1), None, Direction::DOWN, (dims.0-1, dims.1-2), &mut groups, &mut visited_by, &direction_map);
+    println!("{:?} ", groups);
+    // submit!(2, z);
+
+}
+
+// fn build_graph(grid: &HashMap<(isize, isize), char>, start: (isize, isize), end: (isize, isize), groups: &mut HashMap<(isize, isize), Node>, visited_by: &mut HashMap<(isize, isize), (isize, isize)>, direction_map: &HashMap<Direction, (isize, isize)>) {
+//     let mut nodes = Vec::new();
+//     let visited = HashSet::new();
+//     let mut current = start;
+//     loop {
+//         let mut current_node = Node {
+//             id: (current),
+//             points: 1,
+//             next_nodes: Vec::new(),
+//         };
+
+//         nodes.push()
+//     }
+// }
+
+fn reduce_graph(grid: &HashMap<(isize, isize), char>, start: (isize, isize), parent: Option<(isize, isize)>, start_direction: Direction, end: (isize, isize), groups: &mut HashMap<(isize, isize), Node>, visited_by: &mut HashMap<(isize, isize), (isize, isize)>, direction_map: &HashMap<Direction, (isize, isize)>) {
+    // println!("reduce graph starting at: {:?}", start);
+    let mut new_group = Node {
+        id: start,
+        points: HashSet::new(),
+        next_nodes: Vec::new(),
+        exit: false,
+    };
+    if let Some(parent) = parent {
+        new_group.next_nodes.push(parent);
+    }
+    let first_v = direction_map.get(&start_direction).unwrap();
+    let mut previous = start;
+    let mut current = (start.0 + first_v.0, start.1 + first_v.1);
+    loop {
+        let mut possible_paths = Vec::new();
+        // new_group.points += 1;
+        new_group.points.insert(current);
+        visited_by.insert(current, new_group.id);
+        for direction in [Direction::UP, Direction::LEFT, Direction::RIGHT, Direction::DOWN] {
+            let v = direction_map.get(&direction).unwrap();
+            let new_position = (current.0 + v.0, current.1 + v.1);
+            // Never go back to start position for the group
+            if new_position != previous {
+                if let Some(spot) = grid.get(&new_position) {
+                    match spot {
+                        '.' | '>' | '^' | '<' | 'v' => {
+                            if let Some(visited_by) = visited_by.get(&new_position) {
+                                new_group.next_nodes.push(*visited_by);
+                            } else {
+                                possible_paths.push((new_position, direction));
+                            }
+                        }
+                        _ => {},
+                    }
+                }
+            }
+        }
+        if possible_paths.is_empty() {
+            break;
+        } else if possible_paths.len() == 1 {
+            previous = current;
+            current = possible_paths[0].0;
+        } else {
+            for path in possible_paths {
+                reduce_graph(grid, path.0, Some(start), path.1, end, groups, visited_by, direction_map);
+                new_group.next_nodes.push(path.0);
+            }
+            break;
+        }
+    }
+    groups.insert(new_group.id, new_group);
 }
 
 fn build_groups_2(grid: &HashMap<(isize, isize), char>, start: (isize, isize), end: (isize, isize), groups: &mut HashMap<(isize, isize), Group>, longest_path: &mut HashMap<(isize, isize), (isize, isize)>, visited: &mut HashSet<(isize, isize)>, direction_map: &HashMap<Direction, (isize, isize)>) -> usize {
@@ -194,6 +267,14 @@ fn is_exit(direction: &Direction, slope: &char) -> bool {
         (direction == &Direction::LEFT && slope == &'<') ||
         (direction == &Direction::RIGHT && slope == &'>') ||
         (direction == &Direction::DOWN && slope == &'v')
+}
+
+#[derive(Debug)]
+struct Node {
+    id: (isize, isize),
+    points: HashSet<(isize, isize)>,
+    next_nodes: Vec<(isize, isize)>,
+    exit: bool,
 }
 
 #[derive(Debug)]
