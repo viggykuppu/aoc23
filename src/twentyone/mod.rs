@@ -19,12 +19,12 @@ pub fn one() {
         }
     }
     let mut visited_nodes: HashSet<(isize,isize, usize)> = HashSet::new();
-    let num_steps = 131;
+    let num_steps = 64;
     depth_first_search(&grid, &mut visited_nodes, &valid_spaces, start, num_steps);
     // println!("visited {:?}", visited_nodes);
     let num_possible_positions = visited_nodes.iter().filter(|n| n.2 == num_steps).count();
-    println!("unique odd corners {}", visited_nodes.iter().filter(|n| (n.0 - 65).abs() + (n.1 - 65).abs() > 65 && n.2 % 2 == 1).unique_by(|n| (n.0, n.1)).count());
-    println!("unique even corners {}", visited_nodes.iter().filter(|n| (n.0 - 65).abs() + (n.1 - 65).abs() > 65 && n.2 % 2 == 0).unique_by(|n| (n.0, n.1)).count());
+    // println!("unique odd corners {}", visited_nodes.iter().filter(|n| (n.0 - 65).abs() + (n.1 - 65).abs() > 65 && n.2 % 2 == 1).unique_by(|n| (n.0, n.1)).count());
+    // println!("unique even corners {}", visited_nodes.iter().filter(|n| (n.0 - 65).abs() + (n.1 - 65).abs() > 65 && n.2 % 2 == 0).unique_by(|n| (n.0, n.1)).count());
     submit!(1, num_possible_positions);
 }
 
@@ -43,23 +43,15 @@ pub fn two() {
             }
         }
     }
-    let num_steps = 65 + 131*4;
-    // let n_o = depth_first_search_basic(&grid, &mut HashSet::new(), &valid_spaces, start, num_steps);
-    // let n_l = depth_first_search_basic(&grid, &mut HashSet::new(), &valid_spaces, (65, 130), num_steps-66);
-    // let n_r = depth_first_search_basic(&grid, &mut HashSet::new(), &valid_spaces, (65, 0), num_steps-66);
-    // let n_u = depth_first_search_basic(&grid, &mut HashSet::new(), &valid_spaces, (0, 65), num_steps-66);
-    // let n_d = depth_first_search_basic(&grid, &mut HashSet::new(), &valid_spaces, (130, 65), num_steps-66);
-    // let n_ul = depth_first_search_basic(&grid, &mut HashSet::new(), &valid_spaces, (130, 130), num_steps-132);
-    // let n_ur = depth_first_search_basic(&grid, &mut HashSet::new(), &valid_spaces, (130, 0), num_steps-132);
-    // let n_dl = depth_first_search_basic(&grid, &mut HashSet::new(), &valid_spaces, (0, 130), num_steps-132);
-    // let n_dr = depth_first_search_basic(&grid, &mut HashSet::new(), &valid_spaces, (0, 0), num_steps-132);
-    let num_possible_positions_total = depth_first_search_two(&grid, &mut HashSet::new(), &valid_spaces, start, num_steps);
-    // println!("info for {} steps", num_steps);
-    // let cross_total = n_o + n_r + n_l + n_u + n_d;
-    // let corner_total = n_ul + n_ur + n_dl + n_dr;
-    // println!("cross total: {}", cross_total);
-    // println!("corner total: {}", corner_total);
-    // println!("no: {}; nl: {}, nr: {}, nu: {}, nd: {}, total: {}; difference: {}", n_o, n_l, n_r, n_u, n_d, num_possible_positions_total, num_possible_positions_total - (cross_total + corner_total));
+    let mut visited_nodes: HashSet<(isize,isize, usize)> = HashSet::new();
+    let num_steps = 131;
+    depth_first_search(&grid, &mut visited_nodes, &valid_spaces, start, num_steps);
+    let odd_corners = visited_nodes.iter().filter(|n| (n.0 - 65).abs() + (n.1 - 65).abs() > 65 && n.2 % 2 == 1).unique_by(|n| (n.0, n.1)).count() as u64;
+    let even_corners = visited_nodes.iter().filter(|n| (n.0 - 65).abs() + (n.1 - 65).abs() > 65 && n.2 % 2 == 0).unique_by(|n| (n.0, n.1)).count() as u64;
+    let odd_total = visited_nodes.iter().filter(|n| n.2 % 2 == 1).unique_by(|n| (n.0, n.1)).count() as u64;
+    let even_total = visited_nodes.iter().filter(|n| n.2 % 2 == 0).unique_by(|n| (n.0, n.1)).count() as u64;
+    let n: u64 = (26501365 - 65)/131;
+    let num_possible_positions_total = (n+1).pow(2)*odd_total + n.pow(2)*even_total - ((n+1)*odd_corners) + n*even_corners;
     submit!(2, num_possible_positions_total);
 }
 

@@ -1,6 +1,6 @@
 use aocd::*;
 
-use nalgebra::{Matrix2, Vector3, Matrix4, Vector4, Matrix1x4, Matrix1};
+use nalgebra::{Matrix2, Vector3};
 
 use regex::Regex;
 use z3::{Solver, Context, Config, ast::{Int, Ast}};
@@ -89,7 +89,6 @@ pub fn two() {
     let y = model.get_const_interp(&y).unwrap().as_i64().unwrap();
     let z = model.get_const_interp(&z).unwrap().as_i64().unwrap();
     submit!(2, x+y+z);
-    
 }
 
 #[derive(Debug)]

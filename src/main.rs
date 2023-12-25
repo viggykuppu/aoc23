@@ -1,4 +1,6 @@
 #![allow(dead_code, unused_variables)]
+
+use std::time::Instant;
 mod five;
 mod four;
 mod one;
@@ -26,6 +28,6 @@ mod twentyfour;
 mod twentyfive;
 
 fn main() {
-    twentyfour::one();
-    twentyfour::two();
+    twentyone::one();
+    twentyone::two();
 }
