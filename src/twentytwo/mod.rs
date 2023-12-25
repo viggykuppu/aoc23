@@ -1,4 +1,4 @@
-use std::{collections::{HashMap, HashSet}, ops::{RangeInclusive, Range}};
+use std::{collections::{HashMap, HashSet}, ops::{RangeInclusive}};
 
 use aocd::*;
 use itertools::Itertools;
