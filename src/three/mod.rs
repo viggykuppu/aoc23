@@ -3,7 +3,7 @@ use std::{collections::HashMap, ops::Range};
 use aocd::*;
 use regex::Regex;
 
-#[aocd(2023, 3, "src/three/input.txt")]
+#[aocd(2023, 3)]
 pub fn one() {
     let input = input!();
     let char_matrix: Vec<_> = input

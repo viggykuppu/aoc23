@@ -1,7 +1,6 @@
 use std::{collections::{HashMap, HashSet, BinaryHeap}, cmp::Reverse};
 
 use aocd::*;
-use itertools::Itertools;
 use regex::Regex;
 
 

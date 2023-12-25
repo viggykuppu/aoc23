@@ -27,7 +27,7 @@ pub fn one() {
     submit!(1, z);
 }
 
-#[aocd(2023, 23, "src/twentythree/input.txt")]
+#[aocd(2023, 23)]
 pub fn two() {
     let binding = input!();
     let direction_map = HashMap::from([(Direction::UP, (-1, 0)), (Direction::DOWN, (1, 0)),(Direction::LEFT, (0, -1)),(Direction::RIGHT, (0, 1))]);

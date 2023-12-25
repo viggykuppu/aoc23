@@ -4,10 +4,10 @@ use nalgebra::{Matrix2, Vector3};
 
 use regex::Regex;
 
-#[aocd(2023,24, "src/twentyfour/input.txt")]
+#[aocd(2023,24)]
 pub fn one() {
     let binding = input!();
-    let hail_regex = Regex::new(r"(-{0,1}\d+, -{0,1}\d+, -{0,1}\d+) @ (-{0,1}\d+, -{0,1}\d+, -{0,1}\d+)").unwrap();
+    let hail_regex = Regex::new(r"(-{0,1}\d+, -{0,1}\d+, -{0,1}\d+) @ (-{0,1}\d+,(\s)+-{0,1}\d+,(\s)+-{0,1}\d+)").unwrap();
     let hail: Vec<_> = binding.lines().map(|line| {
         let caps: Vec<_> = hail_regex.captures_iter(line).collect();
         let position: Vec<f64> = caps[0][1].split(",").map(|p| {
@@ -35,7 +35,7 @@ pub fn one() {
             if me.is_parallel(other) {
                 println!("parallel velocities {i} and {j}");
             }
-            if me.is_perpindicular(other) {
+            if me.is_perpendicular(other) {
                 println!("perpindicular velocities {i} and {j}");
             }
         }
@@ -44,9 +44,23 @@ pub fn one() {
     // submit!(1, total_collisions);
 }
 
-#[aocd(2023,24)]
+#[aocd(2023,24,"src/twentyfour/input.txt")]
 pub fn two() {
     let binding = input!();
+    let hail_regex = Regex::new(r"(-{0,1}\d+, -{0,1}\d+, -{0,1}\d+) @ (-{0,1}\d+, -{0,1}\d+, -{0,1}\d+)").unwrap();
+    let hail: Vec<_> = binding.lines().map(|line| {
+        let caps: Vec<_> = hail_regex.captures_iter(line).collect();
+        let position: Vec<f64> = caps[0][1].split(",").map(|p| {
+            p.trim().parse::<f64>().unwrap()
+        }).collect();
+        let velocity: Vec<f64> = caps[0][2].split(",").map(|p| {
+            p.trim().parse::<f64>().unwrap()
+        }).collect();
+        HailStone {
+            position: Vector3::<f64>::new(position[0],position[1],position[2]),
+            velocity: Vector3::<f64>::new(velocity[0],velocity[1],velocity[2]),
+        }
+    }).collect();
 }
 
 #[derive(Debug)]
@@ -81,7 +95,7 @@ impl HailStone {
         a.cross(&b).magnitude() == 0.0
     }
 
-    fn is_perpindicular(&self, other: &HailStone) -> bool {
+    fn is_perpendicular(&self, other: &HailStone) -> bool {
         let cross = self.velocity.dot(&other.velocity);
         cross == 0.0
     }

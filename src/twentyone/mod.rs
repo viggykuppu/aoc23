@@ -3,7 +3,7 @@ use itertools::*;
 
 use aocd::*;
 
-#[aocd(2023,21, "src/twentyone/input.txt")]
+#[aocd(2023,21)]
 pub fn one() {
     let binding = input!();
     let mut start: (isize, isize) = (0,0);
@@ -28,7 +28,7 @@ pub fn one() {
     submit!(1, num_possible_positions);
 }
 
-#[aocd(2023,21, "src/twentyone/input.txt")]
+#[aocd(2023,21)]
 pub fn two() {
     let binding = input!();
     let mut start: (isize, isize) = (0,0);
