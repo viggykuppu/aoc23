@@ -27,5 +27,5 @@ mod twentyfive;
 
 fn main() {
     twentyfour::one();
-    // twentyfour::two();
+    twentyfour::two();
 }
