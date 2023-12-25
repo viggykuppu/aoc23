@@ -36,7 +36,7 @@ pub fn one() {
     // insight here is that each of the 3 edges removed are highly traversed on a dijkstras done on ever node
     // if we consider the final two subgraphs A & B, then the only connection b/t the two subgraphs are the 3 edges (x,y,z)
     // as a result all paths from a node in A to a node in B must go across one of (x,y,z)
-    // So theoretically these nodes are highly traversed as long as |A| and |B| is not too wildly different I imagine
+    // So theoretically these nodes are highly traversed
     // If we apply dijkstra's 3 times and remove the most traversed edge then we'll get the right 3 edges to remove
     for _ in 0..3 {
         let mut edge_frequency_map = HashMap::new();
